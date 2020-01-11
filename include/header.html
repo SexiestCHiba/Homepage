@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Startpage - Your centralized access to the web</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Your centralized access to the web" />
+    <link href="public/style.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="fullscreen" style="display:none;">
+        <div id="close-button"><a href="javascript:closeFullscreen();"><i class="material-icons">close</i>Close</a></div>
+        <div id="fs-login-content" style="display:none;">
+            <div id="fs-login-warning" style="display:none;">Une erreur est survenue</div>
+            <form id="loginForm">
+                <label for="mail">Mail adress</label><br />
+                <input type="text" placeholder="Insert your mail adress" id="mail" required><br />
+                <label for="password">Password</label><br />
+                <input type="password" placeholder="Insert your password" id="password" required><br />
+                <button type="submit">Login</button>
+
+            </form>
+        </div>
+        <div id="fs-signup-content" style="display:none;">
+            <form id="fs-signup-content">
+                <label for="">Mail adress:</label><br />
+                <input type="email" id="mailSignup" required><br />
+                <input type="password" id="passSignup" required><br />
+            </form>
+        </div>
+        <div id="fs-settings-content" style="display:none;">
+            <form id="settingsForm" disabled>
+                <label for="selectSearchEngine">Change your search engine: </label><br />
+                <select id="selectSearchEngine"></select><br />
+                <a href="javascript:disconnectPOST();">Disconnect</a>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <nav>
+        <div id="title">StartPage</div>
+        <section id="st-login"><a id="login-link">Loading...</a> &nbsp;<a id="settings"
+                href="javascript:openSettings();"></a> &nbsp; <a id="disconnect"
+                href="javascript:disconnectPOST();"></a><a id="signup-link" href="javascript:openSignup();"></a>
+        </section>
+    </nav>
+    <main>
+        <div id="wrapper">
+            <a id="se-domain" href="https://google.com" target="_blank">
+                <img id="search-logo" src="public/google_logo.png">
+            </a>
+            <form id="search-form" method="GET" action="https://www.google.com/search">
+                <div id="input-wrapper">
+                    <input type="search" name="q" placeholder="Rechercher pour planter des arbres...">
+                    <button type="submit" class="material-icons">search</button>
+                </div>
+            </form>
+            <div id="favorites">
+                <div>
+                    <div>Facebook</div>
+                </div>
+                <div>
+                    <div>Twitter</div>
+                </div>
+                <div>
+                    <div>Twitter</div>
+                </div>
+                <div>
+                    <div>Twitter</div>
+                </div>
+                <div>
+                    <div class="material-icons">add</div>
+                </div>
+            </div>
+        </div>
+        <div id="news">Hé Écosia a planté 80M d'arbre grâce a vous tous depuis 2013.</div>
+    </main>
+    <script src="/public/credentials.js"></script>
+</body>
+
+</html>
