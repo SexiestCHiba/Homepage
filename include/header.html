@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <title>Startpage - Your centralized access to the web</title>
     <meta charset="utf-8" />
     <meta name="description" content="Your centralized access to the web" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="public/style.css" rel="stylesheet" />
+    <link rel="icon" href="/public/icon.png" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
@@ -14,8 +16,8 @@
     <div id="fullscreen" style="display:none;">
         <div id="close-button"><a href="javascript:closeFullscreen();"><i class="material-icons">close</i>Close</a></div>
         <div id="fs-login-content" style="display:none;">
-            <div id="fs-login-warning" style="display:none;">Une erreur est survenue</div>
-            <form id="loginForm">
+            <div id="fs-login-warning" style="display:none;">An error occured</div>
+            <form id="loginForm" disabled>
                 <label for="mail">Mail adress</label><br />
                 <input type="text" placeholder="Insert your mail adress" id="mail" required><br />
                 <label for="password">Password</label><br />
@@ -25,10 +27,13 @@
             </form>
         </div>
         <div id="fs-signup-content" style="display:none;">
-            <form id="fs-signup-content">
-                <label for="">Mail adress:</label><br />
+            <div id="fs-signup-warning" style="display:none;">An error occured</div>
+            <form id="signup-form" disabled>
+                <label for="mailSignup">Mail adress:</label><br />
                 <input type="email" id="mailSignup" required><br />
+                <label for="passSignup">Password:</label><br />
                 <input type="password" id="passSignup" required><br />
+                <button type="submit">Sign up</button>
             </form>
         </div>
         <div id="fs-settings-content" style="display:none;">
@@ -42,19 +47,20 @@
     </div>
     <nav>
         <div id="title">StartPage</div>
-        <section id="st-login"><a id="login-link">Loading...</a> &nbsp;<a id="settings"
-                href="javascript:openSettings();"></a> &nbsp; <a id="disconnect"
-                href="javascript:disconnectPOST();"></a><a id="signup-link" href="javascript:openSignup();"></a>
+        <section id="st-login"><a id="login-link">Loading...</a>
+            <a id="settings" style="display:none;" href="javascript:openSettings();">Settings</a>
+            <a id="disconnect" style="display:none;" href="javascript:disconnectPOST();">Disconnect</a>
+            <a id="signup-link" style="display:none;" href="javascript:openSignup();">Sign up</a>
         </section>
     </nav>
     <main>
         <div id="wrapper">
-            <a id="se-domain" href="https://google.com" target="_blank">
-                <img id="search-logo" src="public/google_logo.png">
+            <a id="se-domain" href="https://google.com" rel="noopener" target="_blank">
+                <img id="search-logo" src="public/google_logo.png" alt="Google's icon">
             </a>
             <form id="search-form" method="GET" action="https://www.google.com/search">
                 <div id="input-wrapper">
-                    <input type="search" name="q" placeholder="Rechercher pour planter des arbres...">
+                    <input type="search" name="q" placeholder="Recherche...">
                     <button type="submit" class="material-icons">search</button>
                 </div>
             </form>
@@ -78,7 +84,7 @@
         </div>
         <div id="news">Hé Écosia a planté 80M d'arbre grâce a vous tous depuis 2013.</div>
     </main>
-    <script src="/public/credentials.js"></script>
+    <script src="/public/script.js"></script>
 </body>
 
 </html>

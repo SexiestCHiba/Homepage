@@ -21,17 +21,19 @@ let changeLoginInfos = function (obj) {
     let sedomain = document.getElementById('se-domain');
     if (obj.connected) {
         loginELement.innerHTML = "Connected as " + obj.mail;
-        document.getElementById('settings').innerHTML = "Settings";
-        document.getElementById('disconnect').innerHTML = "Disconnect";
-        document.getElementById('signup-link').innerHTML = "";
+        document.getElementById('settings').style.display = "inline";
+        document.getElementById('disconnect').style.display = "inline";
+        document.getElementById('signup-link').style.display= "none";
         if (searchengines[obj.searchengine]) {
             form.setAttribute('action', searchengines[obj.searchengine].search);
             picture.setAttribute('src', searchengines[obj.searchengine].picture_url);
+            picture.setAttribute('alt', obj.searchengine + '\'s icon');
             sedomain.setAttribute('href', searchengines[obj.searchengine].domain);
             currentSearchEngine = obj.searchengine;
         } else {
             form.setAttribute('action', searchengines["Google"].search);
             picture.setAttribute('src', searchengines["Google"].picture_url);
+            picture.setAttribute('alt', 'Google\'s icon');
             sedomain.setAttribute('href', searchengines["Google"].domain);
             currentSearchEngine = "Google";
         }
@@ -51,9 +53,9 @@ let changeLoginInfos = function (obj) {
 
     } else {
         loginELement.innerHTML = "<a href=\"javascript:loginScreen();\">Login</a>";
-        document.getElementById('disconnect').innerHTML = "";
-        document.getElementById('settings').innerHTML = "";
-        document.getElementById('signup-link').innerHTML = "Signup";
+        document.getElementById('disconnect').style.display = "none";
+        document.getElementById('settings').style.display = "none";
+        document.getElementById('signup-link').style.display = "inline";
         form.setAttribute('action', searchengines["Google"].search);
         picture.setAttribute('src', searchengines["Google"].picture_url);
         currentSearchEngine = "Google";
@@ -170,5 +172,35 @@ document.getElementById('settingsForm').addEventListener("submit", (event) => {
 
         }
     })
+    event.preventDefault();
+});
+
+document.getElementById('signup-form').addEventListener("submit", (event) => {
+    let email = document.getElementById('mailSignup').value;
+    let password = document.getElementById('passSignup').value;
+    if(email.value !== "" && password.value !== ""){
+        $.ajax({
+            url: "/request",
+            type: "POST",
+            dataType: 'html',
+            data: 'data=signup&mail=' + email + '&password=' + password,
+            success: (html, status) => {
+                obj = JSON.parse(html);
+                if(obj.connected){
+                    changeLoginInfos(obj);
+                    closeFullscreen();
+                }else{
+                    document.getElementById('fs-signup-warning').innerHTML = obj.error;
+                    document.getElementById('fs-signup-warning').style.display = "block";
+                }
+            },
+            error: (result, status, error) => {
+
+            }
+        })
+    }else{
+        document.getElementById('fs-signup-warning').innerHTML = "Please insert your mail adress and your password to sign up";
+        document.getElementById('fs-signup-warning').style.display = "block";
+    }
     event.preventDefault();
 });
