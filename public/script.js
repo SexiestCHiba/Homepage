@@ -8,6 +8,11 @@ let searchengines = {
         "search": "https://www.ecosia.org/search",
         "domain": "https://www.ecosia.org/",
         "picture_url": "/public/ecosia_logo.png"
+    },
+    "Bing!":{
+        "search": "https://bing.com/search",
+        "domain": "https://bing.com",
+        "picture_url": "None"
     }
 };
 
@@ -19,6 +24,7 @@ let changeLoginInfos = function (obj) {
     let picture = document.getElementById('search-logo');
     let form = document.getElementById('search-form');
     let sedomain = document.getElementById('se-domain');
+    let favorite = document.getElementById('favorites');
     if (obj.connected) {
         loginELement.innerHTML = "Connected as " + obj.mail;
         document.getElementById('settings').style.display = "inline";
@@ -30,6 +36,12 @@ let changeLoginInfos = function (obj) {
             picture.setAttribute('alt', obj.searchengine + '\'s icon');
             sedomain.setAttribute('href', searchengines[obj.searchengine].domain);
             currentSearchEngine = obj.searchengine;
+            favorite.innerHTML = "";
+            for(i in obj.favorite){
+                favorite.innerHTML += '<a href="' + obj.favorite[i].domain + '"><div style="background-color:' + obj.favorite[i].color + ';"><div>' + obj.favorite[i].name + '</div></div></a>';
+            }
+            favorite.innerHTML += '<div onclick="addFavorite();"><div class="material-icons">add</div></div>';
+
         } else {
             form.setAttribute('action', searchengines["Google"].search);
             picture.setAttribute('src', searchengines["Google"].picture_url);
@@ -59,6 +71,7 @@ let changeLoginInfos = function (obj) {
         form.setAttribute('action', searchengines["Google"].search);
         picture.setAttribute('src', searchengines["Google"].picture_url);
         currentSearchEngine = "Google";
+        favorite.innerHTML = "";
     }
 }
 
@@ -87,6 +100,11 @@ let openSettings = function () {
 let openSignup = function () {
     displayFullscreen();
     document.getElementById('fs-signup-content').style.display = "block";
+}
+
+let addFavorite = function(){
+    displayFullscreen();
+    document.getElementById('addFavorite').style.display = "block";
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -123,6 +141,7 @@ let closeFullscreen = function () {
     document.getElementById('fs-login-content').style.display = "none";
     document.getElementById('fs-signup-content').style.display = "none";
     document.getElementById('fs-settings-content').style.display = "none";
+    document.getElementById('addFavorite').style.display = "none";
 };
 
 document.getElementById('loginForm').addEventListener("submit", (event) => {
@@ -133,7 +152,7 @@ document.getElementById('loginForm').addEventListener("submit", (event) => {
             dataType: 'html',
             data: 'data=login&mail=' + document.getElementById('mail').value + "&password=" + document.getElementById('password').value,
             success: (html, status) => {
-                obj = JSON.parse(html);
+                let obj = JSON.parse(html);
                 changeLoginInfos(obj);
                 if (!obj.connected) {
                     if (document.getElementById('fs-login-content').style.display !== "none") {
@@ -164,7 +183,7 @@ document.getElementById('settingsForm').addEventListener("submit", (event) => {
         dataType: 'html',
         data: 'data=settings&searchengine=' + se.options[se.selectedIndex].value,
         success: (html, status) => {
-            obj = JSON.parse(html);
+            let obj = JSON.parse(html);
             changeLoginInfos(obj);
             closeFullscreen();
         },
@@ -185,7 +204,7 @@ document.getElementById('signup-form').addEventListener("submit", (event) => {
             dataType: 'html',
             data: 'data=signup&mail=' + email + '&password=' + password,
             success: (html, status) => {
-                obj = JSON.parse(html);
+                let obj = JSON.parse(html);
                 if(obj.connected){
                     changeLoginInfos(obj);
                     closeFullscreen();
@@ -202,5 +221,26 @@ document.getElementById('signup-form').addEventListener("submit", (event) => {
         document.getElementById('fs-signup-warning').innerHTML = "Please insert your mail adress and your password to sign up";
         document.getElementById('fs-signup-warning').style.display = "block";
     }
+    event.preventDefault();
+});
+
+document.getElementById('formFavorite').addEventListener("submit", (event) => {
+    let name = document.getElementById('name').value;
+    let domain = document.getElementById('domain').value;
+    let color = document.getElementById('color').value;
+    $.ajax({
+        url: "/request",
+        type: "POST",
+        dataType: 'html',
+        data: 'data=addFavorite&name=' + name + '&domain=' + domain + '&color=' + color,
+        success: (html, status) => {
+            let obj = JSON.parse(html);
+            changeLoginInfos(obj);
+            closeFullscreen();
+        },
+        error: (result, status, error) => {
+
+        }
+    })
     event.preventDefault();
 });

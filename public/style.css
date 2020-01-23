@@ -42,7 +42,7 @@ nav {
     z-index: 200;
 }
 
-#fs-login-content, #fs-signup-content, #fs-settings-content {
+#fs-login-content, #fs-signup-content, #fs-settings-content, #addFavorite {
     color: black;
     background-color: white;
     position: absolute;
@@ -50,6 +50,10 @@ nav {
     left: 50%;
     transform: translate(-50%, -50%);
     border:1px solid #cecece;
+}
+
+#addFavorite {
+    cursor: pointer;
 }
 
 #wrapper {
@@ -100,12 +104,16 @@ nav {
     min-width: 500px;
 }
 
-#favorites > div{
-    background-color: grey;
-    
+#favorites a{
+    color:black;
+    text-decoration: none;
 }
 
-#favorites > div > div{
+#favorites a > div{
+    height:100%;
+}
+
+#favorites div > div{
     position: relative;
     top:50%;
     left:50%;

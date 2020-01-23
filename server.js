@@ -34,28 +34,42 @@ const promise1 = new Promise((resolve, reject) => {
             resolve('Connected to db!');
         }
     });
-    // con.connect(function(err) {
-    //     if (err){
-    //         reject(err)
-    //     }else{
-    //         resolve('Connected to db!');
-    //     }
-    // });
 });
 
-let credentialsPOST = function (sqlResult, {req, res}) {
-    if (sqlResult.length === 1) {
-        response = {
-            "connected": true,
-            "mail": sqlResult[0].mail,
-            "searchengine": sqlResult[0].searchengine
+let credentialsPOST = function (req, res) {
+
+    mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', (sqlResult, {req, res}) => {
+        if (sqlResult.length === 1) {
+            response = {
+                "connected": true,
+                "mail": sqlResult[0].mail,
+                "searchengine": sqlResult[0].searchengine,
+                "favorite": []
+            }
+            let credentialsPromise = new Promise((resolve) =>{
+                mysqlRequest('SELECT * FROM favorite WHERE id_account=' + sqlResult[0].id + ' ORDER BY id', (results) => {
+                    if(sqlResult.length > 0){
+                        for(i in results){
+                            response.favorite[i] = {
+                                'name': results[i].name,
+                                'domain': results[i].domain,
+                                'color': results[i].color
+                            }
+                        }
+                    }
+                    resolve();
+                });
+            });
+            credentialsPromise.then(() => {
+                res.status(200).send(response);
+            })
+        } else {
+            response = {
+                "connected": false
+            }
+            res.status(200).send(response);
         }
-    } else {
-        response = {
-            "connected": false
-        }
-    }
-    res.status(200).send(response);
+    }, {req, res});
 }
 
 let loginPOST = function (sqlResult, {req, res, mail, password}) {
@@ -67,19 +81,19 @@ let loginPOST = function (sqlResult, {req, res, mail, password}) {
                     resolve();
                 });
                 promise3.then(() => {
-                    mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', credentialsPOST, {req, res});
+                    credentialsPOST(req, res);
                 });
             }else{
-                mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', credentialsPOST, {req, res});
+                credentialsPOST(req, res);
             }
         });
     } else {
-        mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', credentialsPOST, {req, res});
+        credentialsPOST(req, res);
     }
 }
 
 let updateSettings = function (results, {req, res}) {
-    mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', credentialsPOST, {req, res})
+    credentialsPOST(req, res);
 }
 
 let signupPOST = function(results, {req, res, mail, password}){
@@ -179,7 +193,7 @@ let routing = () => {
             res.setHeader('Cache-Control', 'no-store, no-cache, private');
             res.setHeader('Keep-Alive', 'timeout=5, max=1000');
             if (req.body.data === "credentials") {
-                mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', credentialsPOST, {req, res});
+                credentialsPOST(req, res);
             } else {
                 if (req.body.data === "login") {
                     let mail = req.body.mail;
@@ -187,8 +201,8 @@ let routing = () => {
                     mysqlRequest('SELECT * FROM account WHERE mail="' + mail + '"', loginPOST, {"req": req, "res": res, "mail": mail, "password": password});
                 } else {
                     if (req.body.data === "disconnect") {
-                        req.session.regenerate(() => {
-                            mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', credentialsPOST, {req, res});
+                        req.session.regenerate((error) => {
+                            credentialsPOST(req, res);
                         });
                     } else {
                         if (req.body.data === "settings") {
@@ -197,7 +211,20 @@ let routing = () => {
                             if(req.body.data === "signup"){
                                 mysqlRequest('SELECT id FROM account WHERE mail="' + req.body.mail +'"', signupPOST, {req, res, 'mail': req.body.mail, 'password': req.body.password});
                             }else{
-                                res.status(400).send("400");
+                                if(req.body.data === "addFavorite"){
+                                    mysqlRequest('SELECT id FROM account WHERE session=\'' + req.session.session + '\'', (results, {req, res}) => {
+                                        // TODO
+                                        if(results.length === 1){
+                                            mysqlRequest('INSERT INTO favorite(id_account, name, domain, color) VALUES(' + results[0].id + ', "' + req.body.name + '", "' + req.body.domain + '", "' + req.body.color + '")', updateSettings, {req, res});
+                                        }else{
+                                            req.session.regenerate((error) => {
+                                                credentialsPOST(req, res);
+                                            });
+                                        }
+                                    }, {req, res});
+                                }else{
+                                    res.status(400).send("400");
+                                }
                             }
                         }
                     }
