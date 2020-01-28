@@ -14,7 +14,9 @@
 
 <body>
     <div id="fullscreen" style="display:none;">
-        <div id="close-button"><a href="javascript:closeFullscreen();"><i class="material-icons">close</i>Close</a></div>
+        <div id="close-button">
+            <a href="javascript:closeFullscreen();"><i class="material-icons">close</i>Close</a>
+        </div>
         <div id="fs-login-content" style="display:none;">
             <div id="fs-login-warning" style="display:none;">An error occured</div>
             <form id="loginForm" disabled>
@@ -55,6 +57,17 @@
                 <br /><button type="submit">Submit</button>
             </form>
         </div>
+        <div id="fs-editFavorite" style="display:none;">
+            <form id="formEditFavorite" disabled>
+                <label for="editName">Name:</label><br />
+                <input type="text" id="editName" required><br />
+                <label for="domainForm">Domain</label><br />
+                <input type="text" id="domainForm" required><br />
+                <label for="colorForm">Color</label><br />
+                <input type="color" id="colorForm"></input><br />
+                <button type="submit">Submit</button>
+            </form>
+        </div>
     </div>
     <nav>
         <div id="title">StartPage</div>
@@ -75,6 +88,7 @@
                     <button type="submit" class="material-icons">search</button>
                 </div>
             </form>
+
             <div id="favorites">
             </div>
         </div>

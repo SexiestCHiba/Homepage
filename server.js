@@ -38,7 +38,10 @@ const promise1 = new Promise((resolve, reject) => {
 
 let credentialsPOST = function (req, res) {
 
-    mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', (sqlResult, {req, res}) => {
+    mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', (sqlResult, {
+        req,
+        res
+    }) => {
         if (sqlResult.length === 1) {
             response = {
                 "connected": true,
@@ -46,11 +49,12 @@ let credentialsPOST = function (req, res) {
                 "searchengine": sqlResult[0].searchengine,
                 "favorite": []
             }
-            let credentialsPromise = new Promise((resolve) =>{
+            let credentialsPromise = new Promise((resolve) => {
                 mysqlRequest('SELECT * FROM favorite WHERE id_account=' + sqlResult[0].id + ' ORDER BY id', (results) => {
-                    if(sqlResult.length > 0){
-                        for(i in results){
+                    if (sqlResult.length > 0) {
+                        for (i in results) {
                             response.favorite[i] = {
+                                'id': results[i].id,
                                 'name': results[i].name,
                                 'domain': results[i].domain,
                                 'color': results[i].color
@@ -69,13 +73,21 @@ let credentialsPOST = function (req, res) {
             }
             res.status(200).send(response);
         }
-    }, {req, res});
+    }, {
+        req,
+        res
+    });
 }
 
-let loginPOST = function (sqlResult, {req, res, mail, password}) {
+let loginPOST = function (sqlResult, {
+    req,
+    res,
+    mail,
+    password
+}) {
     if (sqlResult.length === 1) {
         bcrypt.compare(password, sqlResult[0].password).then((value) => {
-            if(value){
+            if (value) {
                 promise3 = new Promise((resolve) => {
                     mysqlRequest('UPDATE account SET session="' + req.session.session + '" WHERE mail="' + mail + '"');
                     resolve();
@@ -83,7 +95,7 @@ let loginPOST = function (sqlResult, {req, res, mail, password}) {
                 promise3.then(() => {
                     credentialsPOST(req, res);
                 });
-            }else{
+            } else {
                 credentialsPOST(req, res);
             }
         });
@@ -92,35 +104,54 @@ let loginPOST = function (sqlResult, {req, res, mail, password}) {
     }
 }
 
-let updateSettings = function (results, {req, res}) {
+let updateSettings = function (results, {
+    req,
+    res
+}) {
     credentialsPOST(req, res);
 }
 
-let signupPOST = function(results, {req, res, mail, password}){
-    if(results.length === 0){
-        if(mail.match(/^([a-z]|[0-9]|\.){2,}@([a-z]|[0-9]|\._-){2,}\.[a-z]{2,}$/i)){
+let signupPOST = function (results, {
+    req,
+    res,
+    mail,
+    password
+}) {
+    if (results.length === 0) {
+        if (mail.match(/^([a-z]|[0-9]|\.){2,}@([a-z]|[0-9]|\._-){2,}\.[a-z]{2,}$/i)) {
             mail = mail.toLowerCase();
-            if(password.match(/.{8,255}/) && password.match(/[a-z]{1,}/g) && password.match(/[A-Z]{1,}/g) && password.match(/[0-9]{1,}/g)){
+            if (password.match(/.{8,255}/) && password.match(/[a-z]{1,}/g) && password.match(/[A-Z]{1,}/g) && password.match(/[0-9]{1,}/g)) {
                 bcrypt.hash(password, saltRounds).then((value) => {
-                    mysqlRequest('INSERT INTO account(mail, password) VALUES("' + mail + '","' + value + '")', (results, {req, res}) => {
-                        mysqlRequest('SELECT * FROM account WHERE mail="' + mail + '"', loginPOST, {"req": req, "res": res, "mail": mail, "password": password});
-                    }, {req, res});
+                    mysqlRequest('INSERT INTO account(mail, password) VALUES("' + mail + '","' + value + '")', (results, {
+                        req,
+                        res
+                    }) => {
+                        mysqlRequest('SELECT * FROM account WHERE mail="' + mail + '"', loginPOST, {
+                            "req": req,
+                            "res": res,
+                            "mail": mail,
+                            "password": password
+                        });
+                    }, {
+                        req,
+                        res
+                    });
                 });
-            }else{
+            } else {
                 let response = {
                     "connected": false,
                     "error": "Password don\'t match to specifications"
                 };
                 res.send(response);
             }
-        }else{
+        } else {
             let response = {
                 "connected": false,
                 "error": "Mail don\'t match to specifications"
             };
             res.send(response);
         }
-    }else{
+    } else {
         let response = {
             'connected': false,
             'error': "Account already exist"
@@ -176,7 +207,9 @@ let routing = () => {
 
         }))
         .use(compression())
-        .use(bodyParser.urlencoded({extended: false}))
+        .use(bodyParser.urlencoded({
+            extended: false
+        }))
         .use('/public', express.static(__dirname + '/public'))
         .use((req, res, next) => {
             verifyCookie(req, res);
@@ -198,7 +231,12 @@ let routing = () => {
                 if (req.body.data === "login") {
                     let mail = req.body.mail;
                     let password = req.body.password;
-                    mysqlRequest('SELECT * FROM account WHERE mail="' + mail + '"', loginPOST, {"req": req, "res": res, "mail": mail, "password": password});
+                    mysqlRequest('SELECT * FROM account WHERE mail="' + mail + '"', loginPOST, {
+                        "req": req,
+                        "res": res,
+                        "mail": mail,
+                        "password": password
+                    });
                 } else {
                     if (req.body.data === "disconnect") {
                         req.session.regenerate((error) => {
@@ -206,24 +244,66 @@ let routing = () => {
                         });
                     } else {
                         if (req.body.data === "settings") {
-                            mysqlRequest('UPDATE account SET searchengine="' + req.body.searchengine + '" WHERE session="' + req.session.session + '"', updateSettings, {req, res});
+                            mysqlRequest('UPDATE account SET searchengine="' + req.body.searchengine + '" WHERE session="' + req.session.session + '"', updateSettings, {
+                                req,
+                                res
+                            });
                         } else {
-                            if(req.body.data === "signup"){
-                                mysqlRequest('SELECT id FROM account WHERE mail="' + req.body.mail +'"', signupPOST, {req, res, 'mail': req.body.mail, 'password': req.body.password});
-                            }else{
-                                if(req.body.data === "addFavorite"){
-                                    mysqlRequest('SELECT id FROM account WHERE session=\'' + req.session.session + '\'', (results, {req, res}) => {
-                                        // TODO
-                                        if(results.length === 1){
-                                            mysqlRequest('INSERT INTO favorite(id_account, name, domain, color) VALUES(' + results[0].id + ', "' + req.body.name + '", "' + req.body.domain + '", "' + req.body.color + '")', updateSettings, {req, res});
-                                        }else{
+                            if (req.body.data === "signup") {
+                                mysqlRequest('SELECT id FROM account WHERE mail="' + req.body.mail + '"', signupPOST, {
+                                    req,
+                                    res,
+                                    'mail': req.body.mail,
+                                    'password': req.body.password
+                                });
+                            } else {
+                                if (req.body.data === "addFavorite") {
+                                    mysqlRequest('SELECT id FROM account WHERE session=\'' + req.session.session + '\'', (results, {
+                                        req,
+                                        res
+                                    }) => {
+                                        if (results.length === 1) {
+                                            mysqlRequest('INSERT INTO favorite(id_account, name, domain, color) VALUES(' + results[0].id + ', "' + req.body.name + '", "' + req.body.domain + '", "' + req.body.color + '")', updateSettings, {
+                                                req,
+                                                res
+                                            });
+                                        } else {
                                             req.session.regenerate((error) => {
                                                 credentialsPOST(req, res);
                                             });
                                         }
-                                    }, {req, res});
-                                }else{
-                                    res.status(400).send("400");
+                                    }, {
+                                        req,
+                                        res
+                                    });
+                                } else {
+                                    if (req.body.data === 'deleteFav') {
+                                        mysqlRequest('DELETE FROM favorite WHERE id=' + req.body.id, updateSettings, {
+                                            req,
+                                            res
+                                        });
+                                    } else {
+                                        if (req.body.data === 'editFavorite') {
+                                            mysqlRequest('SELECT id FROM account WHERE session="' + req.session.session + '"', (results, {
+                                                req,
+                                                res
+                                            }) => {
+                                                if (results.length === 1) {
+                                                    mysqlRequest('UPDATE favorite SET name="' + req.body.name + '", domain="' + req.body.domain + '", color="' + req.body.color + '" WHERE id=' + req.body.id + ' AND id_account=' + results[0].id, updateSettings, {
+                                                        req,
+                                                        res
+                                                    });
+                                                } else {
+                                                    credentialsPOST(req, res);
+                                                }
+                                            }, {
+                                                req,
+                                                res
+                                            });
+                                        } else {
+                                            res.status(400).send("Argument data is missing or miswritten\nAre you tried to hack me ?\n");
+                                        }
+                                    }
                                 }
                             }
                         }

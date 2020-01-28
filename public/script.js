@@ -9,15 +9,15 @@ let searchengines = {
         "domain": "https://www.ecosia.org/",
         "picture_url": "/public/ecosia_logo.png"
     },
-    "Bing!":{
+    "Bing!": {
         "search": "https://bing.com/search",
         "domain": "https://bing.com",
-        "picture_url": "None"
+        "picture_url": '/public/bing_logo.png'
     }
 };
 
 let currentSearchEngine = "Google";
-
+let idEdit = undefined;
 
 let changeLoginInfos = function (obj) {
     let loginELement = document.getElementById('login-link');
@@ -26,10 +26,10 @@ let changeLoginInfos = function (obj) {
     let sedomain = document.getElementById('se-domain');
     let favorite = document.getElementById('favorites');
     if (obj.connected) {
-        loginELement.innerHTML = "Connected as " + obj.mail;
+        loginELement.innerHTML = obj.mail;
         document.getElementById('settings').style.display = "inline";
         document.getElementById('disconnect').style.display = "inline";
-        document.getElementById('signup-link').style.display= "none";
+        document.getElementById('signup-link').style.display = "none";
         if (searchengines[obj.searchengine]) {
             form.setAttribute('action', searchengines[obj.searchengine].search);
             picture.setAttribute('src', searchengines[obj.searchengine].picture_url);
@@ -37,11 +37,10 @@ let changeLoginInfos = function (obj) {
             sedomain.setAttribute('href', searchengines[obj.searchengine].domain);
             currentSearchEngine = obj.searchengine;
             favorite.innerHTML = "";
-            for(i in obj.favorite){
-                favorite.innerHTML += '<a href="' + obj.favorite[i].domain + '"><div style="background-color:' + obj.favorite[i].color + ';"><div>' + obj.favorite[i].name + '</div></div></a>';
+            for (i in obj.favorite) {
+                favorite.innerHTML += '<a href="' + obj.favorite[i].domain + '"><div style="background-color:' + obj.favorite[i].color + ';"><div>' + obj.favorite[i].name + '</div><button class="deleteIcon material-icons" onclick="editFav(' + obj.favorite[i].id + ',  \'' + obj.favorite[i].name + '\', \'' + obj.favorite[i].domain + '\', \'' + obj.favorite[i].color + '\'); return false;">edit</button><button class="deleteIcon material-icons" onclick="deleteFav(' + obj.favorite[i].id + '); return false;">close</button></div></a>';
             }
-            favorite.innerHTML += '<div onclick="addFavorite();"><div class="material-icons">add</div></div>';
-
+            favorite.innerHTML += '<div class="addFavorite" onclick="addFavorite();"><div class="material-icons">add</div></div>';
         } else {
             form.setAttribute('action', searchengines["Google"].search);
             picture.setAttribute('src', searchengines["Google"].picture_url);
@@ -102,10 +101,36 @@ let openSignup = function () {
     document.getElementById('fs-signup-content').style.display = "block";
 }
 
-let addFavorite = function(){
+let addFavorite = function () {
     displayFullscreen();
     document.getElementById('addFavorite').style.display = "block";
 }
+
+let deleteFav = function (id) {
+    $.ajax({
+        url: "/request",
+        type: "POST",
+        dataType: 'html',
+        data: 'data=deleteFav&id=' + id,
+        success: (html, status) => {
+            let obj = JSON.parse(html);
+            changeLoginInfos(obj);
+        },
+        error: (result, status, error) => {
+
+        }
+    });
+};
+
+let editFav = function (id, name, domain, color) {
+    idEdit = id;
+    displayFullscreen();
+    document.getElementById('fs-editFavorite').style.display = "block";
+    document.getElementById('editName').value = name;
+    document.getElementById('domainForm'). value = domain;
+    document.getElementById('colorForm').value = color;
+
+};
 
 window.addEventListener('DOMContentLoaded', () => {
     $.ajax({
@@ -142,10 +167,11 @@ let closeFullscreen = function () {
     document.getElementById('fs-signup-content').style.display = "none";
     document.getElementById('fs-settings-content').style.display = "none";
     document.getElementById('addFavorite').style.display = "none";
+    document.getElementById('fs-editFavorite').style.display = "none";
 };
 
 document.getElementById('loginForm').addEventListener("submit", (event) => {
-    if(document.getElementById('mail').value !== "" && document.getElementById('password').value !== ""){
+    if (document.getElementById('mail').value !== "" && document.getElementById('password').value !== "") {
         $.ajax({
             url: "/request",
             type: "POST",
@@ -164,10 +190,10 @@ document.getElementById('loginForm').addEventListener("submit", (event) => {
                 }
             },
             error: (result, status, error) => {
-    
+
             }
         })
-    }else{
+    } else {
         document.getElementById('fs-login-warning').style.display = "block";
         document.getElementById('fs-login-warning').innerHTML = "Please insert your mail adress and your password to connect";
     }
@@ -197,7 +223,7 @@ document.getElementById('settingsForm').addEventListener("submit", (event) => {
 document.getElementById('signup-form').addEventListener("submit", (event) => {
     let email = document.getElementById('mailSignup').value;
     let password = document.getElementById('passSignup').value;
-    if(email.value !== "" && password.value !== ""){
+    if (email.value !== "" && password.value !== "") {
         $.ajax({
             url: "/request",
             type: "POST",
@@ -205,10 +231,10 @@ document.getElementById('signup-form').addEventListener("submit", (event) => {
             data: 'data=signup&mail=' + email + '&password=' + password,
             success: (html, status) => {
                 let obj = JSON.parse(html);
-                if(obj.connected){
+                if (obj.connected) {
                     changeLoginInfos(obj);
                     closeFullscreen();
-                }else{
+                } else {
                     document.getElementById('fs-signup-warning').innerHTML = obj.error;
                     document.getElementById('fs-signup-warning').style.display = "block";
                 }
@@ -217,7 +243,7 @@ document.getElementById('signup-form').addEventListener("submit", (event) => {
 
             }
         })
-    }else{
+    } else {
         document.getElementById('fs-signup-warning').innerHTML = "Please insert your mail adress and your password to sign up";
         document.getElementById('fs-signup-warning').style.display = "block";
     }
@@ -241,6 +267,27 @@ document.getElementById('formFavorite').addEventListener("submit", (event) => {
         error: (result, status, error) => {
 
         }
-    })
+    });
+    event.preventDefault();
+});
+
+document.getElementById('formEditFavorite').addEventListener("submit", (event) => {
+    let name = document.getElementById('editName').value;
+    let domain = document.getElementById('domainForm'). value;
+    let color = document.getElementById('colorForm').value;
+    $.ajax({
+        url: "/request",
+        type: "POST",
+        dataType: 'html',
+        data: 'data=editFavorite&id=' + idEdit + '&name=' + name + '&domain=' + domain + '&color=' + color,
+        success: (html, status) => {
+            let obj = JSON.parse(html);
+            changeLoginInfos(obj);
+            closeFullscreen();
+        },
+        error: (result, status, error) => {
+
+        }
+    });
     event.preventDefault();
 });
