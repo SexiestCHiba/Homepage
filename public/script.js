@@ -72,6 +72,14 @@ let changeLoginInfos = function (obj) {
         currentSearchEngine = "Google";
         favorite.innerHTML = "";
     }
+
+    if(obj.news.length > 0){
+        let newsElement = document.querySelector('#news');
+        newsElement.innerHTML = "";
+        for (i in obj.news) {
+            newsElement.innerHTML += '<div class="news_content"><h2>' + obj.news[i].title + '</h2><hr /><div>' + obj.news[i].content + '</div></div>';
+        }
+    }
 }
 
 let disconnectPOST = function () {
@@ -127,26 +135,10 @@ let editFav = function (id, name, domain, color) {
     displayFullscreen();
     document.getElementById('fs-editFavorite').style.display = "block";
     document.getElementById('editName').value = name;
-    document.getElementById('domainForm'). value = domain;
+    document.getElementById('domainForm').value = domain;
     document.getElementById('colorForm').value = color;
 
 };
-
-window.addEventListener('DOMContentLoaded', () => {
-    $.ajax({
-        url: "/request",
-        type: "POST",
-        dataType: 'html',
-        data: 'data=credentials',
-        success: (html, status) => {
-            let obj = JSON.parse(html);
-            changeLoginInfos(obj)
-        },
-        error: (result, status, error) => {
-
-        }
-    });
-});
 
 let loginScreen = function () {
     displayFullscreen();
@@ -169,6 +161,22 @@ let closeFullscreen = function () {
     document.getElementById('addFavorite').style.display = "none";
     document.getElementById('fs-editFavorite').style.display = "none";
 };
+
+window.addEventListener('DOMContentLoaded', () => {
+    $.ajax({
+        url: "/request",
+        type: "POST",
+        dataType: 'html',
+        data: 'data=credentials',
+        success: (html, status) => {
+            let obj = JSON.parse(html);
+            changeLoginInfos(obj)
+        },
+        error: (result, status, error) => {
+
+        }
+    });
+});
 
 document.getElementById('loginForm').addEventListener("submit", (event) => {
     if (document.getElementById('mail').value !== "" && document.getElementById('password').value !== "") {
@@ -273,7 +281,7 @@ document.getElementById('formFavorite').addEventListener("submit", (event) => {
 
 document.getElementById('formEditFavorite').addEventListener("submit", (event) => {
     let name = document.getElementById('editName').value;
-    let domain = document.getElementById('domainForm'). value;
+    let domain = document.getElementById('domainForm').value;
     let color = document.getElementById('colorForm').value;
     $.ajax({
         url: "/request",

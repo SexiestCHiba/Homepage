@@ -42,6 +42,21 @@ nav {
     z-index: 200;
 }
 
+#close-button a{
+    color:black;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+.material-icons{
+    position: relative;
+    top:7px;
+}
+
+button.material-icons{
+    position: initial;
+}
+
 #fs-login-content,
 #fs-signup-content,
 #fs-settings-content,
@@ -50,10 +65,25 @@ nav {
     color: black;
     background-color: white;
     position: absolute;
+    padding:5px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border: 1px solid #cecece;
+}
+
+#fullscreen input[type="text"], #fullscreen input[type="password"], #fullscreen input[type="email"], #fullscreen select, #fullscreen button{
+    margin: 4px;
+}
+
+#fullscreen input[type="text"], #fullscreen input[type="password"], #fullscreen input[type="email"]{
+    min-height: 30px;
+    padding:4px;
+}
+
+#fullscreen button, #fullscreen select{
+    padding: 3px;
+    min-width: 75px;
 }
 
 #addFavorite {
@@ -67,6 +97,28 @@ nav {
     justify-content: center;
     align-items: center;
     padding-top: 50px;
+}
+
+#news{
+    min-height:2vh;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.news_content{
+    width:70vw;
+    max-width: 1000px;
+    border-radius: 3px;
+    border:1px solid #cecece;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.news_content h2{
+    text-transform: capitalize;
 }
 
 #search-logo {
@@ -109,12 +161,12 @@ nav {
     min-width: 500px;
 }
 
-#favorites>a {
+#favorites > a {
     color: black;
     text-decoration: none;
 }
 
-#favorites a>div,
+#favorites a > div,
 .addFavorite {
     height: 150px;
     cursor: pointer;
@@ -140,11 +192,11 @@ nav {
     transition: opacity 0.15s linear;
 }
 
-#favorites a>div:hover .deleteIcon {
+#favorites a > div:hover .deleteIcon {
     opacity: 1;
 }
 
-#favorites div>div {
+#favorites div > div {
     position: relative;
     top: 50%;
     left: 50%;

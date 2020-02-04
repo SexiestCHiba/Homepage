@@ -21,9 +21,9 @@
             <div id="fs-login-warning" style="display:none;">An error occured</div>
             <form id="loginForm" disabled>
                 <label for="mail">Mail adress</label><br />
-                <input type="text" placeholder="Insert your mail adress" id="mail" required><br />
+                <input type="email" placeholder="Insert your mail adress..." id="mail" required><br />
                 <label for="password">Password</label><br />
-                <input type="password" placeholder="Insert your password" id="password" required><br />
+                <input type="password" placeholder="Insert your password..." id="password" required><br />
                 <button type="submit">Login</button>
 
             </form>
@@ -32,9 +32,9 @@
             <div id="fs-signup-warning" style="display:none;">An error occured</div>
             <form id="signup-form" disabled>
                 <label for="mailSignup">Mail adress:</label><br />
-                <input type="email" id="mailSignup" required><br />
+                <input type="email" id="mailSignup" placeholder="Insert your mail adress..." required><br />
                 <label for="passSignup">Password:</label><br />
-                <input type="password" id="passSignup" required><br />
+                <input type="password" id="passSignup" placeholder="Insert your password..." required><br />
                 <button type="submit">Sign up</button>
             </form>
         </div>
@@ -42,16 +42,16 @@
             <form id="settingsForm" disabled>
                 <label for="selectSearchEngine">Change your search engine: </label><br />
                 <select id="selectSearchEngine"></select><br />
-                <a href="javascript:disconnectPOST();">Disconnect</a>
                 <button type="submit">Submit</button>
             </form>
+            <a href="javascript:disconnectPOST();">Disconnect</a>
         </div>
         <div id="addFavorite" style="display:none;">
             <form id="formFavorite" disabled>
                 <label for="name">Name</label><br />
-                <input type="text" id="name" required><br />
+                <input type="text" id="name" placeholder="Insert website name..." required><br />
                 <label for="domain">Domain</label><br />
-                <input type="text" id="domain" required><br />
+                <input type="text" id="domain" placeholder="Insert website domain..." required><br />
                 <label for="color">Color</label><br />
                 <input type="color" id="color" required><br />
                 <br /><button type="submit">Submit</button>
@@ -60,9 +60,9 @@
         <div id="fs-editFavorite" style="display:none;">
             <form id="formEditFavorite" disabled>
                 <label for="editName">Name:</label><br />
-                <input type="text" id="editName" required><br />
+                <input type="text" id="editName" placeholder="Insert website name..." required><br />
                 <label for="domainForm">Domain</label><br />
-                <input type="text" id="domainForm" required><br />
+                <input type="text" id="domainForm" placeholder="Insert website domain..." required><br />
                 <label for="colorForm">Color</label><br />
                 <input type="color" id="colorForm"></input><br />
                 <button type="submit">Submit</button>
@@ -92,7 +92,7 @@
             <div id="favorites">
             </div>
         </div>
-        <div id="news">Hé Écosia a planté 80M d'arbre grâce a vous tous depuis 2013.</div>
+        <div id="news"><div class="news_content">Loading lastest news...</div></div>
     </main>
     <script src="/public/script.js"></script>
 </body>

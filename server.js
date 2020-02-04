@@ -36,18 +36,38 @@ const promise1 = new Promise((resolve, reject) => {
     });
 });
 
-let credentialsPOST = function (req, res) {
+let credentialsPOST = function (req, res, firstLoad = false) {
 
     mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', (sqlResult, {
         req,
         res
     }) => {
+        let newsPromise = new Promise((resolve) => {
+            if(firstLoad){
+                mysqlRequest('SELECT * FROM news WHERE showNews=1 ORDER BY id DESC LIMIT 0, 10', (result) => {
+                    if(result.length > 0){
+                        for(i in result){
+                            response.news[i] = {
+                                'title': result[i].title,
+                                'content': result[i].content
+                            };
+                        }
+                    }
+                    resolve();
+                });
+            }else{
+                resolve();
+            }
+        });
+
+
         if (sqlResult.length === 1) {
             response = {
                 "connected": true,
                 "mail": sqlResult[0].mail,
                 "searchengine": sqlResult[0].searchengine,
-                "favorite": []
+                "favorite": [],
+                "news": []
             }
             let credentialsPromise = new Promise((resolve) => {
                 mysqlRequest('SELECT * FROM favorite WHERE id_account=' + sqlResult[0].id + ' ORDER BY id', (results) => {
@@ -64,14 +84,17 @@ let credentialsPOST = function (req, res) {
                     resolve();
                 });
             });
-            credentialsPromise.then(() => {
+            Promise.all([credentialsPromise, newsPromise]).then(() => {
                 res.status(200).send(response);
-            })
+            });
         } else {
             response = {
-                "connected": false
+                "connected": false,
+                "news": []
             }
-            res.status(200).send(response);
+            newsPromise.then(() => {
+                res.status(200).send(response);
+            });
         }
     }, {
         req,
@@ -226,7 +249,7 @@ let routing = () => {
             res.setHeader('Cache-Control', 'no-store, no-cache, private');
             res.setHeader('Keep-Alive', 'timeout=5, max=1000');
             if (req.body.data === "credentials") {
-                credentialsPOST(req, res);
+                credentialsPOST(req, res, true);
             } else {
                 if (req.body.data === "login") {
                     let mail = req.body.mail;
