@@ -6,13 +6,15 @@
     <meta charset="utf-8" />
     <meta name="description" content="Your centralized access to the web" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="public/style.css" rel="stylesheet" />
+    <link href="/public/style.css" rel="stylesheet" />
+    <link id="dark_theme" href="/public/dark_mode.css" rel="stylesheet alternate" />
     <link rel="icon" href="/public/icon.png" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
-<body>
+<body style="overflow: hidden;">
+    <div id="loading"></div>
     <div id="fullscreen" style="display:none;">
         <div id="close-button">
             <a href="javascript:closeFullscreen();"><i class="material-icons">close</i>Close</a>
@@ -42,6 +44,12 @@
             <form id="settingsForm" disabled>
                 <label for="selectSearchEngine">Change your search engine: </label><br />
                 <select id="selectSearchEngine"></select><br />
+                <label forp"dark_mode">Change your color theme: </label><br />
+                <select id="dark_mode">
+                    <option value="1">Light Mode</option>
+                    <option value="2">Dark Mode</option>
+                    <option alue="3">Auto</option>
+                </select><br />
                 <button type="submit">Submit</button>
             </form>
             <a href="javascript:disconnectPOST();">Disconnect</a>
@@ -84,7 +92,7 @@
             </a>
             <form id="search-form" method="GET" action="https://www.google.com/search">
                 <div id="input-wrapper">
-                    <input type="search" name="q" placeholder="Recherche...">
+                    <input type="search" name="q" placeholder="Recherche..." autofocus>
                     <button type="submit" class="material-icons">search</button>
                 </div>
             </form>
