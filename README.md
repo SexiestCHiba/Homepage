@@ -1,6 +1,6 @@
-# Homepage
+# Startpage
  
- Homepage is a node.js server that offer you a direct access to your favorite search engine and to your favorite websites
+ Startpage is a node.js server that offer you a direct access to your favorite search engine and to your favorite websites
  
  You can get an overview of the project at the following address: [skull-pixel.fr:8080](http://skull-pixel.fr:8080)
 
