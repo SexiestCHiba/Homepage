@@ -15,13 +15,14 @@
 
 <body style="overflow: hidden;">
     <div id="loading"></div>
+    <div id="warning">Unable to contact remote server</div>
     <div id="fullscreen" style="display:none;">
         <div id="close-button">
             <a href="javascript:closeFullscreen();"><i class="material-icons">close</i>Close</a>
         </div>
         <div id="fs-login-content" style="display:none;">
             <div id="fs-login-warning" style="display:none;">An error occured</div>
-            <form id="loginForm" disabled>
+            <form id="loginForm">
                 <label for="mail">Mail adress</label><br />
                 <input type="email" placeholder="Insert your mail adress..." id="mail" required><br />
                 <label for="password">Password</label><br />
@@ -32,7 +33,7 @@
         </div>
         <div id="fs-signup-content" style="display:none;">
             <div id="fs-signup-warning" style="display:none;">An error occured</div>
-            <form id="signup-form" disabled>
+            <form id="signup-form">
                 <label for="mailSignup">Mail adress:</label><br />
                 <input type="email" id="mailSignup" placeholder="Insert your mail adress..." required><br />
                 <label for="passSignup">Password:</label><br />
@@ -41,7 +42,7 @@
             </form>
         </div>
         <div id="fs-settings-content" style="display:none;">
-            <form id="settingsForm" disabled>
+            <form id="settingsForm">
                 <label for="selectSearchEngine">Change your search engine: </label><br />
                 <select id="selectSearchEngine"></select><br />
                 <label forp"dark_mode">Change your color theme: </label><br />
@@ -55,7 +56,7 @@
             <a href="javascript:disconnectPOST();">Disconnect</a>
         </div>
         <div id="addFavorite" style="display:none;">
-            <form id="formFavorite" disabled>
+            <form id="formFavorite">
                 <label for="name">Name</label><br />
                 <input type="text" id="name" placeholder="Insert website name..." required><br />
                 <label for="domain">Domain</label><br />
@@ -66,7 +67,7 @@
             </form>
         </div>
         <div id="fs-editFavorite" style="display:none;">
-            <form id="formEditFavorite" disabled>
+            <form id="formEditFavorite">
                 <label for="editName">Name:</label><br />
                 <input type="text" id="editName" placeholder="Insert website name..." required><br />
                 <label for="domainForm">Domain</label><br />
