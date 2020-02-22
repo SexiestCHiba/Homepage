@@ -116,7 +116,7 @@ let disconnectPOST = function () {
             changeTheme();
         },
         error: (result, status, error) => {
-            displayWarning();
+            displayWarning(status, result.status);
         }
     });
     closeFullscreen();
@@ -148,7 +148,7 @@ let deleteFav = function (id) {
             changeLoginInfos(object);
         },
         error: (result, status, error) => {
-            displayWarning();
+            displayWarning(status, result.status);
         }
     });
 };
@@ -196,7 +196,7 @@ window.addEventListener('DOMContentLoaded', () => {
             changeLoginInfos(object);
         },
         error: (result, status, error) => {
-            displayWarning();
+            displayWarning(status, result.status);
         }
     });
     hideLoadingScreen();
@@ -228,7 +228,7 @@ document.querySelector('#loginForm').addEventListener("submit", (event) => {
                 }
             },
             error: (result, status, error) => {
-                displayWarning();
+                displayWarning(status, result.status);
             }
         })
     } else {
@@ -251,7 +251,7 @@ document.querySelector('#settingsForm').addEventListener("submit", (event) => {
             closeFullscreen();
         },
         error: (result, status, error) => {
-            displayWarning();
+            displayWarning(status, result.status);
         }
     })
 });
@@ -277,7 +277,7 @@ document.querySelector('#signup-form').addEventListener("submit", (event) => {
                 }
             },
             error: (result, status, error) => {
-                displayWarning();
+                displayWarning(status, result.status);
             }
         })
     } else {
@@ -303,7 +303,7 @@ document.querySelector('#formFavorite').addEventListener("submit", (event) => {
                 closeFullscreen();
             },
             error: (result, status, error) => {
-                displayWarning();
+                displayWarning(status, result.status);
             }
         });
     }else{
@@ -328,7 +328,7 @@ document.querySelector('#formEditFavorite').addEventListener("submit", (event) =
                 closeFullscreen();
             },
             error: (result, status, error) => {
-                displayWarning();
+                displayWarning(status, result.status);
             }
         });
     }else{
@@ -365,9 +365,15 @@ function startLoop(varLoop, callback, interval){
 
 startLoop(loop, changeTheme, 1000);
 
-function displayWarning(){
+function displayWarning(error, statusCode){
+    if(error){
+        $("#warningMessage").html(error + ' ' + statusCode);
+        if(statusCode === 0)
+            $("#warningMessage").append(" Timeout");
+    }
     $('#warning').css('top', '0px');
     window.setTimeout(() => {
         $('#warning').css('top', '');
+        $("#warningMessage").html("");
     }, 10000);
 }
