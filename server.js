@@ -40,10 +40,10 @@ let credentialsPOST = function (req, res, firstLoad = false) {
 
     mysqlRequest('SELECT * FROM account WHERE session="' + req.session.session + '"', (sqlResult, {req, res}) => {
         let newsPromise = new Promise((resolve) => {
-            if(firstLoad){
+            if (firstLoad) {
                 mysqlRequest('SELECT * FROM news WHERE showNews=1 ORDER BY id DESC LIMIT 0, 10', (result) => {
-                    if(result.length > 0){
-                        for(i in result){
+                    if (result.length > 0) {
+                        for (i in result) {
                             response.news[i] = {
                                 'title': result[i].title,
                                 'content': result[i].content
@@ -52,7 +52,7 @@ let credentialsPOST = function (req, res, firstLoad = false) {
                     }
                     resolve();
                 });
-            }else{
+            } else {
                 resolve();
             }
         });
@@ -119,11 +119,19 @@ let loginPOST = function (sqlResult, {req, res, mail, password}) {
     }
 }
 
-let updateSettings = function (results, {req, res}) {
+let updateSettings = function (results, {req, res, error}) {
+    if(error !== undefined){
+        res.status(500).send('A Mysql error appear');
+        return;
+    }
     credentialsPOST(req, res);
 }
 
-let signupPOST = function (results, {req, res, mail, password}) {
+let signupPOST = function (results, {req, res, mail, password, error}) {
+    if(error !== undefined){
+        res.status(500).send('A Mysql error appear');
+        return;
+    }
     if (results.length === 0) {
         if (mail.match(/^([a-z]|[0-9]|\.){2,}@([a-z]|[0-9]|\._-){2,}\.[a-z]{2,}$/i)) {
             mail = mail.toLowerCase();
@@ -163,8 +171,10 @@ let signupPOST = function (results, {req, res, mail, password}) {
 
 const mysqlRequest = (request, callback, arguments) => {
     con.query(request, (error, results) => {
-        if (error)
-            throw error;
+        if (error){
+            console.error(error);
+            arguments.push(error);
+        }
         if (callback !== undefined) {
             callback(results, arguments);
         }
@@ -226,49 +236,78 @@ let routing = () => {
             res.setHeader('Content-Type', 'text/json; charset=utf-8');
             res.setHeader('Cache-Control', 'no-store, no-cache, private');
             res.setHeader('Keep-Alive', 'timeout=5, max=1000');
-            if (req.body.data === "credentials") {
-                credentialsPOST(req, res, true);
-            } else {
-                if (req.body.data === "login") {
-                    let mail = req.body.mail;
-                    let password = req.body.password;
-                    mysqlRequest('SELECT * FROM account WHERE mail="' + mail + '"', loginPOST, {"req": req, "res": res, "mail": mail, "password": password});
+            try {
+                if (req.body.data === "credentials") {
+                    credentialsPOST(req, res, true);
                 } else {
-                    if (req.body.data === "disconnect") {
-                        req.session.regenerate((error) => {
-                            credentialsPOST(req, res);
-                        });
+                    if (req.body.data === "login") {
+                        let mail = req.body.mail;
+                        let password = req.body.password;
+                        mysqlRequest('SELECT * FROM account WHERE mail="' + mail + '"', loginPOST, {"req": req, "res": res, "mail": mail, "password": password});
                     } else {
-                        if (req.body.data === "settings") {
-                            mysqlRequest('UPDATE account SET searchengine="' + req.body.searchengine + '", dark_mode="' + req.body.dark_mode + '" WHERE session="' + req.session.session + '"', updateSettings, {req, res});
+                        if (req.body.data === "disconnect") {
+                            req.session.regenerate((error) => {
+                                credentialsPOST(req, res);
+                            });
                         } else {
-                            if (req.body.data === "signup") {
-                                mysqlRequest('SELECT id FROM account WHERE mail="' + req.body.mail + '"', signupPOST, {req, res, 'mail': req.body.mail, 'password': req.body.password});
+                            if (req.body.data === "settings") {
+                                if(req.body.searchengine !== undefined && req.body.dark_mode !== undefined){
+                                    mysqlRequest('UPDATE account SET searchengine="' + req.body.searchengine + '", dark_mode="' + req.body.dark_mode + '" WHERE session="' + req.session.session + '"', updateSettings, {req, res});
+                                }else{
+                                    throw 'Every value need to be specified';
+                                }
                             } else {
-                                if (req.body.data === "addFavorite") {
-                                    mysqlRequest('SELECT id FROM account WHERE session=\'' + req.session.session + '\'', (results, {req, res}) => {
-                                        if (results.length === 1) {
-                                            mysqlRequest('INSERT INTO favorite(id_account, name, domain, color) VALUES(' + results[0].id + ', "' + req.body.name + '", "' + req.body.domain + '", "' + req.body.color + '")', updateSettings, {req, res});
-                                        } else {
-                                            req.session.regenerate((error) => {
-                                                credentialsPOST(req, res);
-                                            });
-                                        }
-                                    }, {req, res});
+                                if (req.body.data === "signup") {
+                                    if(req.body.mail !== undefined && req.body.password !== undefined){
+                                        mysqlRequest('SELECT id FROM account WHERE mail="' + req.body.mail + '"', signupPOST, {req, res, 'mail': req.body.mail, 'password': req.body.password});
+                                    }else{
+                                        throw 'Every value need to be specified';
+                                    }
                                 } else {
-                                    if (req.body.data === 'deleteFav') {
-                                        mysqlRequest('DELETE FROM favorite WHERE id=' + req.body.id, updateSettings, {req, res});
-                                    } else {
-                                        if (req.body.data === 'editFavorite') {
-                                            mysqlRequest('SELECT id FROM account WHERE session="' + req.session.session + '"', (results, {req, res}) => {
+                                    if (req.body.data === "addFavorite") {
+                                        if(req.body.name !== undefined && req.body.domain !== undefined && req.body.color !== undefined){
+                                            mysqlRequest('SELECT id FROM account WHERE session=\'' + req.session.session + '\'', (results, {req, res, error}) => {
+                                                if(error !== undefined){
+                                                    res.status(500).send('A Mysql error appear');
+                                                    return;
+                                                }
                                                 if (results.length === 1) {
-                                                    mysqlRequest('UPDATE favorite SET name="' + req.body.name + '", domain="' + req.body.domain + '", color="' + req.body.color + '" WHERE id=' + req.body.id + ' AND id_account=' + results[0].id, updateSettings, {req, res});
+                                                    mysqlRequest('INSERT INTO favorite(id_account, name, domain, color) VALUES(' + results[0].id + ', "' + req.body.name + '", "' + req.body.domain + '", "' + req.body.color + '")', updateSettings, {req, res});
                                                 } else {
-                                                    credentialsPOST(req, res);
+                                                    req.session.regenerate((error) => {
+                                                        credentialsPOST(req, res);
+                                                    });
                                                 }
                                             }, {req, res});
+                                        }else{
+                                            throw 'Every value need to be specified';
+                                        }
+                                    } else {
+                                        if (req.body.data === 'deleteFav') {
+                                            if(req.body.id !== undefined){
+                                                mysqlRequest('DELETE FROM favorite WHERE id=' + req.body.id, updateSettings, {req, res});
+                                            }else{
+                                                throw 'id hasn\'t been specified';
+                                            }
                                         } else {
-                                            res.status(400).send("Argument data is missing or miswritten\nAre you tried to hack me ?\n");
+                                            if (req.body.data === 'editFavorite') {
+                                                if(req.body.name !== undefined && req.body.domain !== undefined && req.body.color !== undefined && req.body.id !== undefined){
+                                                    mysqlRequest('SELECT id FROM account WHERE session="' + req.session.session + '"', (results, {req, res, error}) => {
+                                                        if(error !== undefined){
+                                                            res.status(500).send('A Mysql error appear');
+                                                        }
+                                                        if (results.length === 1) {
+                                                            mysqlRequest('UPDATE favorite SET name="' + req.body.name + '", domain="' + req.body.domain + '", color="' + req.body.color + '" WHERE id=' + req.body.id + ' AND id_account=' + results[0].id, updateSettings, {req, res});
+                                                        } else {
+                                                            credentialsPOST(req, res);
+                                                        }
+                                                    }, {req, res});
+                                                }else{
+                                                    throw 'Every value need to be specified';
+                                                }
+                                            } else {
+                                                throw 'Argument data is missing or miswritten\nAre you tried to hack me ?\n';
+                                            }
                                         }
                                     }
                                 }
@@ -276,7 +315,15 @@ let routing = () => {
                         }
                     }
                 }
+            } catch (err) {
+                res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+                if(err === "Argument data is missing or miswritten\nAre you tried to hack me ?\n"){
+                    res.status(400).send("Argument data is missing or miswritten\nAre you tried to hack me ?\n");
+                    return;
+                }
+                res.status(500).send(err);
             }
+            
         })
         .use((req, res) => {
             res.setHeader('Content-Type', 'text/plain; charset=utf-8');

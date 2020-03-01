@@ -11,14 +11,28 @@
     <link rel="icon" href="/public/icon.png" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+#loading{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100vh;
+    background-color: #36393f;
+    z-index:10;
+}
+    </style>
 </head>
 
 <body style="overflow: hidden;">
     <div id="loading"></div>
-    <div id="warning">
-        Unable to contact to remote server
+    <div id="warning" class="warning">
+        <div id="warningTitle"></div>
         <div id="warningMessage"></div>
     </div>
+    <noscript class="warning" style="top:0px;height:48px;">
+        <div>Please enable javascript, this page can't work without</div>
+    </noscript>
     <div id="fullscreen" style="display:none;">
         <div id="close-button">
             <a href="javascript:closeFullscreen();"><i class="material-icons">close</i>Close</a>

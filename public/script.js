@@ -148,7 +148,7 @@ let deleteFav = function (id) {
             changeLoginInfos(object);
         },
         error: (result, status, error) => {
-            displayWarning(status, result.status);
+            displayWarning(status, result.status, error, result.responseText);
         }
     });
 };
@@ -186,20 +186,26 @@ let closeFullscreen = function () {
 };
 
 window.addEventListener('DOMContentLoaded', () => {
-    $.ajax({
-        url: "/request",
-        type: "POST",
-        dataType: 'html',
-        data: 'data=credentials',
-        success: (html, status) => {
-            let object = JSON.parse(html);
-            changeLoginInfos(object);
-        },
-        error: (result, status, error) => {
-            displayWarning(status, result.status);
-        }
+    new Promise((resolve, reject) => {
+        $.ajax({
+            url: "/request",
+            type: "POST",
+            dataType: 'html',
+            data: 'data=credentials',
+            success: (html, status) => {
+                let object = JSON.parse(html);
+                changeLoginInfos(object);
+                resolve();
+            },
+            error: (result, status, error) => {
+                reject(status, result, error, result.responseText);
+            }
+        });
+    }).catch((status, result, error) => {
+        displayWarning(status, result.status, error);
+    }).finally(() => {
+        hideLoadingScreen();
     });
-    hideLoadingScreen();
 });
 
 function hideLoadingScreen(){
@@ -228,7 +234,7 @@ document.querySelector('#loginForm').addEventListener("submit", (event) => {
                 }
             },
             error: (result, status, error) => {
-                displayWarning(status, result.status);
+                displayWarning(status, result.status, error, result.responseText);
             }
         })
     } else {
@@ -244,14 +250,14 @@ document.querySelector('#settingsForm').addEventListener("submit", (event) => {
         url: "/request",
         type: "POST",
         dataType: 'html',
-        data: 'data=settings&searchengine=' + se.options[se.selectedIndex].value + '&dark_mode=' + (document.querySelector('#dark_mode').selectedIndex + 1),
+        data: 'data=settings&searchengine=' + se.options[se.selectedIndex].value + '&ark_mode=' + (document.querySelector('#dark_mode').selectedIndex + 1),
         success: (html, status) => {
             let object = JSON.parse(html);
             changeLoginInfos(object);
             closeFullscreen();
         },
         error: (result, status, error) => {
-            displayWarning(status, result.status);
+            displayWarning(status, result.status, error, result.responseText);
         }
     })
 });
@@ -277,7 +283,7 @@ document.querySelector('#signup-form').addEventListener("submit", (event) => {
                 }
             },
             error: (result, status, error) => {
-                displayWarning(status, result.status);
+                displayWarning(status, result.status, error, result.responseText);
             }
         })
     } else {
@@ -303,7 +309,7 @@ document.querySelector('#formFavorite').addEventListener("submit", (event) => {
                 closeFullscreen();
             },
             error: (result, status, error) => {
-                displayWarning(status, result.status);
+                displayWarning(status, result.status, error, result.responseText);
             }
         });
     }else{
@@ -328,7 +334,7 @@ document.querySelector('#formEditFavorite').addEventListener("submit", (event) =
                 closeFullscreen();
             },
             error: (result, status, error) => {
-                displayWarning(status, result.status);
+                displayWarning(status, result.status, error, result.responseText);
             }
         });
     }else{
@@ -365,11 +371,21 @@ function startLoop(varLoop, callback, interval){
 
 startLoop(loop, changeTheme, 1000);
 
-function displayWarning(error, statusCode){
-    if(error){
+function displayWarning(error, statusCode, message=undefined, responseText=undefined){
+    console.error(error, statusCode, message, responseText);
+    if(responseText !== undefined){
+        $("#warningTitle").html("The server return an error");
+        $("#warningMessage").html(responseText);
+    }else{
         $("#warningMessage").html(error + ' ' + statusCode);
-        if(statusCode === 0)
+        if(message !== undefined)
+            $("#warningMessage").append(' ' + message);
+        if(statusCode === 0){
             $("#warningMessage").append(" Timeout");
+            $("#warningTitle").html("Unable to contact remote server");
+        }else{
+            $("#warningTitle").html("The server return an error");
+        }
     }
     $('#warning').css('top', '0px');
     window.setTimeout(() => {
