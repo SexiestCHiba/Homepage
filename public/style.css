@@ -42,34 +42,34 @@ nav {
     z-index: 200;
 }
 
-.warning{
-    position:fixed;
+.warning {
+    position: fixed;
     width: 25vw;
-    height:96px;
-    top:-96px;
-    left:50%;
+    height: 96px;
+    top: -96px;
+    left: 50%;
     transform: translateX(-50%);
     transition: top 0.4s ease;
     background-color: rgb(172, 0, 0);
-    color:white;
-    z-index:2000;
-    text-align:center;
+    color: white;
+    z-index: 2000;
+    text-align: center;
     line-height: 48px;
-    font-size:1.2em;
+    font-size: 1.2em;
 }
 
-#close-button a{
-    color:black;
+#close-button a {
+    color: black;
     font-size: 20px;
     text-decoration: none;
 }
 
-.material-icons{
+.material-icons {
     position: relative;
-    top:7px;
+    top: 7px;
 }
 
-button.material-icons{
+button.material-icons {
     position: initial;
 }
 
@@ -81,29 +81,37 @@ button.material-icons{
     color: black;
     background-color: white;
     position: absolute;
-    padding:5px;
+    padding: 5px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border: 1px solid #cecece;
 }
 
-#fs-login-warning, #fs-signup-warning{
-    color:red;
-    text-align:center;
-    padding:5px;
+#fs-login-warning,
+#fs-signup-warning {
+    color: red;
+    text-align: center;
+    padding: 5px;
 }
 
-#fullscreen input[type="text"], #fullscreen input[type="password"], #fullscreen input[type="email"], #fullscreen select, #fullscreen button{
+#fullscreen input[type="text"],
+#fullscreen input[type="password"],
+#fullscreen input[type="email"],
+#fullscreen select,
+#fullscreen button {
     margin: 4px;
 }
 
-#fullscreen input[type="text"], #fullscreen input[type="password"], #fullscreen input[type="email"]{
+#fullscreen input[type="text"],
+#fullscreen input[type="password"],
+#fullscreen input[type="email"] {
     min-height: 30px;
-    padding:4px;
+    padding: 4px;
 }
 
-#fullscreen button, #fullscreen select{
+#fullscreen button,
+#fullscreen select {
     padding: 3px;
     min-width: 75px;
 }
@@ -121,25 +129,25 @@ button.material-icons{
     padding-top: 50px;
 }
 
-#news{
-    min-height:2vh;
-    display:flex;
+#news {
+    min-height: 2vh;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-.news_content{
-    width:70vw;
+.news_content {
+    width: 70vw;
     max-width: 1000px;
     border-radius: 3px;
-    border:1px solid #cecece;
+    border: 1px solid #cecece;
     padding: 10px;
     margin-bottom: 20px;
 }
 
-.news_content h2{
+.news_content h2 {
     text-transform: capitalize;
 }
 
@@ -183,13 +191,13 @@ button.material-icons{
     min-width: 500px;
 }
 
-#favorites > a {
-    color:rgb(247, 247, 247);
+#favorites>a {
+    color: rgb(247, 247, 247);
     text-decoration: none;
     text-shadow: 2px 2px 5px black;
 }
 
-#favorites a > div,
+#favorites a>div,
 .addFavorite {
     height: 150px;
     cursor: pointer;
@@ -215,11 +223,11 @@ button.material-icons{
     transition: opacity 0.15s linear;
 }
 
-#favorites a > div:hover .deleteIcon {
+#favorites a>div:hover .deleteIcon {
     opacity: 1;
 }
 
-#favorites div > div {
+#favorites div>div {
     position: relative;
     top: 50%;
     left: 50%;

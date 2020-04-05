@@ -4,3 +4,4 @@ test/
 .vscode
 .vs
 package-lock.json
+npm-debug.log

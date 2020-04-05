@@ -11,21 +11,9 @@
     <link rel="icon" href="/public/icon.png" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <style>
-#loading{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100vh;
-    background-color: #36393f;
-    z-index:10;
-}
-    </style>
 </head>
 
-<body style="overflow: hidden;">
-    <div id="loading"></div>
+<body >
     <div id="warning" class="warning">
         <div id="warningTitle"></div>
         <div id="warningMessage"></div>
@@ -35,38 +23,17 @@
     </noscript>
     <div id="fullscreen" style="display:none;">
         <div id="close-button">
-            <a href="javascript:closeFullscreen();"><i class="material-icons">close</i>Close</a>
-        </div>
-        <div id="fs-login-content" style="display:none;">
-            <div id="fs-login-warning" style="display:none;">An error occured</div>
-            <form id="loginForm">
-                <label for="mail">Mail adress</label><br />
-                <input type="email" placeholder="Insert your mail adress..." id="mail" required><br />
-                <label for="password">Password</label><br />
-                <input type="password" placeholder="Insert your password..." id="password" required><br />
-                <button type="submit">Login</button>
-
-            </form>
-        </div>
-        <div id="fs-signup-content" style="display:none;">
-            <div id="fs-signup-warning" style="display:none;">An error occured</div>
-            <form id="signup-form">
-                <label for="mailSignup">Mail adress:</label><br />
-                <input type="email" id="mailSignup" placeholder="Insert your mail adress..." required><br />
-                <label for="passSignup">Password:</label><br />
-                <input type="password" id="passSignup" placeholder="Insert your password..." required><br />
-                <button type="submit">Sign up</button>
-            </form>
+            <a href="javascript:startpage.closeFullscreen();"><i class="material-icons">close</i>Close</a>
         </div>
         <div id="fs-settings-content" style="display:none;">
             <form id="settingsForm">
                 <label for="selectSearchEngine">Change your search engine: </label><br />
                 <select id="selectSearchEngine"></select><br />
-                <label forp"dark_mode">Change your color theme: </label><br />
+                <label form="dark_mode">Change your color theme: </label><br />
                 <select id="dark_mode">
                     <option value="1">Light Mode</option>
                     <option value="2">Dark Mode</option>
-                    <option alue="3">Auto</option>
+                    <option value="3">Auto</option>
                 </select><br />
                 <button type="submit">Submit</button>
             </form>
@@ -97,10 +64,8 @@
     </div>
     <nav>
         <div id="title">StartPage</div>
-        <section id="st-login"><a id="login-link">Loading...</a>
-            <a id="settings" style="display:none;" href="javascript:openSettings();">Settings</a>
-            <a id="disconnect" style="display:none;" href="javascript:disconnectPOST();">Disconnect</a>
-            <a id="signup-link" style="display:none;" href="javascript:openSignup();">Sign up</a>
+        <section id="st-login">
+            <a id="settings" href="">Settings</a>
         </section>
     </nav>
     <main>
@@ -121,6 +86,7 @@
         <div id="news"><div class="news_content">Loading lastest news...</div></div>
     </main>
     <script src="/public/script.js"></script>
+    <script src="/public/theme.js"></script>
 </body>
 
 </html>

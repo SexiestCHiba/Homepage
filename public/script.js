@@ -1,375 +1,210 @@
-let searchengines = {
-    "Google": {
-        "search": "https://www.google.com/search",
-        "domain": "https://www.google.com/",
-        "picture_url": "/public/google_logo.png"
-    },
-    "Ecosia": {
-        "search": "https://www.ecosia.org/search",
-        "domain": "https://www.ecosia.org/",
-        "picture_url": "/public/ecosia_logo.png"
-    },
-    "Bing": {
-        "search": "https://bing.com/search",
-        "domain": "https://bing.com",
-        "picture_url": '/public/bing_logo.png'
-    },
-    "Yahoo!": {
-        "search": "https://yahoo.com/search",
-        "domain": "https://yahoo.com/",
-        "picture_url": "/public/ecosia.png"
-    }
-};
+class StartPage{
 
-let currentSearchEngine = "Google";
-let idEdit = undefined;
-let dark_mode = 1;
-let loop;
-let obj;
-
-let changeLoginInfos = function (object) {
-    let loginELement = $('#login-link');
-    let picture = $('#search-logo');
-    let form = $('#search-form');
-    let sedomain = $('#se-domain');
-    let favorite = $('#favorites');
-    obj = object;
-    if (obj.connected) {
-        loginELement.html(obj.mail);
-        $('#settings').css('display', "inline");
-        $('#disconnect').css('display', "inline");
-        $('#signup-link').css('display', "none");
-        if (searchengines[obj.searchengine]) {
-            form.attr('action', searchengines[obj.searchengine].search);
-            picture.attr('src', searchengines[obj.searchengine].picture_url);
-            picture.attr('alt', obj.searchengine + '\'s icon');
-            sedomain.attr('href', searchengines[obj.searchengine].domain);
-            currentSearchEngine = obj.searchengine;
-            favorite.html("");
-            for (i in obj.favorite) {
-                favorite.append('<a href="' + obj.favorite[i].domain + '"><div style="background-color:' + obj.favorite[i].color + ';">'+
-                '<div>' + obj.favorite[i].name + '</div><button class="deleteIcon material-icons" onclick="editFav(' + obj.favorite[i].id + ',  \'' + obj.favorite[i].name + '\', \'' + obj.favorite[i].domain + '\', \'' + obj.favorite[i].color + '\'); return false;">edit</button>'+
-                '<button class="deleteIcon material-icons" onclick="deleteFav(' + obj.favorite[i].id + '); return false;">close</button></div></a>');
-            }
-            favorite.append('<div class="addFavorite" onclick="addFavorite();"><div class="material-icons">add</div></div>');
-        } else {
-            form.attr('action', searchengines["Google"].search);
-            picture.attr('src', searchengines["Google"].picture_url);
-            picture.attr('alt', 'Google\'s icon');
-            sedomain.attr('href', searchengines["Google"].domain);
-            currentSearchEngine = "Google";
-        }
-
-        let selectSearchEngine = document.querySelector('#selectSearchEngine');
-        selectSearchEngine.innerHTML = "";
-        for (i in searchengines) {
-            let element = document.createElement("option");
-            element.setAttribute('value', i);
-            let text = document.createTextNode(i);
-            element.appendChild(text)
-            if (i === currentSearchEngine) {
-                element.setAttribute('selected', 'true');
-            }
-            selectSearchEngine.appendChild(element);
-        }
-        let option = document.querySelector('#dark_mode').children;
-        for (let i = 0;i<option.length;i++) {
-            if (i+1 === obj.dark_mode) {
-                option[i].setAttribute('selected', 'true');
-            } else {
-                option[i].removeAttribute('selected');
-            }
-        }
-        dark_mode = obj.dark_mode;
-        changeTheme();
-
-    } else {
-        loginELement.html("<a href=\"javascript:loginScreen();\">Login</a>");
-        $('#disconnect').css('display', "none");
-        $('#settings').css('display', "none");
-        $('#signup-link').css('display', "inline");
-        form.attr('action', searchengines["Google"].search);
-        picture.attr('src', searchengines["Google"].picture_url);
-        currentSearchEngine = "Google";
-        favorite.html("");
-    }
-
-    if(obj.news.length > 0){
-        let newsElement = $('#news');
-        newsElement.html("");
-        for (i in obj.news) {
-            newsElement.html(newsElement.html() + '<div class="news_content"><h2>' + obj.news[i].title + '</h2><hr /><div>' + obj.news[i].content + '</div></div>');
-        }
-    }
-}
-
-let disconnectPOST = function () {
-    $.ajax({
-        url: "/request",
-        type: "POST",
-        dataType: 'html',
-        data: 'data=disconnect',
-        success: (html, status) => {
-            let object = JSON.parse(html);
-            changeLoginInfos(object);
-            dark_mode = 1;
-            changeTheme();
+    searchengines = {
+        "Google": {
+            "search": "https://www.google.com/search",
+            "domain": "https://www.google.com/",
+            "picture_url": "/public/google_logo.png"
         },
-        error: (result, status, error) => {
-            displayWarning(status, result.status);
-        }
-    });
-    closeFullscreen();
-};
-
-let openSettings = function () {
-    displayFullscreen();
-    $('#fs-settings-content').css('display', "block");
-}
-
-let openSignup = function () {
-    displayFullscreen();
-    $('#fs-signup-content').css('display', "block");
-}
-
-let addFavorite = function () {
-    displayFullscreen();
-    $('#addFavorite').css('display', "block");
-}
-
-let deleteFav = function (id) {
-    $.ajax({
-        url: "/request",
-        type: "POST",
-        dataType: 'html',
-        data: 'data=deleteFav&id=' + id,
-        success: (html, status) => {
-            let object = JSON.parse(html);
-            changeLoginInfos(object);
+        "Ecosia": {
+            "search": "https://www.ecosia.org/search",
+            "domain": "https://www.ecosia.org/",
+            "picture_url": "/public/ecosia_logo.png"
         },
-        error: (result, status, error) => {
-            displayWarning(status, result.status, error, result.responseText);
+        "Bing": {
+            "search": "https://bing.com/search",
+            "domain": "https://bing.com",
+            "picture_url": '/public/bing_logo.png'
+        },
+        "Yahoo!": {
+            "search": "https://yahoo.com/search",
+            "domain": "https://yahoo.com/",
+            "picture_url": "/public/ecosia.png"
         }
-    });
-};
+    };
+    
+    currentSearchEngine = "Google";
+    favorite = undefined;
+    idEdit = undefined;
 
-let editFav = function (id, name, domain, color) {
-    idEdit = id;
-    displayFullscreen();
-    $('#fs-editFavorite').css('display', "block");
-    $('#editName').val(name);
-    $('#domainForm').val(domain);
-    $('#colorForm').val(color);
+    loadDefautSearchEngine(){
+        let picture = $('#search-logo');
+        let form = $('#search-form');
+        let sedomain = $('#se-domain');
+        form.attr('action', this.searchengines["Google"].search);
+        picture.attr('src', this.searchengines["Google"].picture_url);
+        picture.attr('alt', 'Google\'s icon');
+        sedomain.attr('href', this.searchengines["Google"].domain);
+        this.currentSearchEngine = "Google";
+        this.saveData();
+    }
+    saveData(){
+        localStorage.setItem('search-engine', this.currentSearchEngine);
+        localStorage.setItem('favorite', JSON.stringify(this.favorite));
+    }
+    
+    loadData(){
+        let favoriteElement = $('#favorites');
+        let picture = $('#search-logo');
+        let form = $('#search-form');
+        let sedomain = $('#se-domain');
+        let se = localStorage.getItem('search-engine');
+        if(se !== null){
+            if (this.searchengines[se]) {
+                form.attr('action', this.searchengines[se].search);
+                picture.attr('src', this.searchengines[se].picture_url);
+                picture.attr('alt', se + '\'s icon');
+                sedomain.attr('href', this.searchengines[se].domain);
+                this.currentSearchEngine = se;
+            }else{
+                this.loadDefautSearchEngine();
+            }
+        }else{
+            this.loadDefautSearchEngine();
+        }
+        this.favorite = JSON.parse(localStorage.getItem('favorite'));
+        favoriteElement.html('');
+        for(let i in this.favorite){
+            favoriteElement.append('<a href="' + this.favorite[i].domain + '"><div style="background-color:' + this.favorite[i].color + ';">'+
+                '<div>' + this.favorite[i].name + '</div>'+
+                '<button class="deleteIcon material-icons" onclick="event.stopPropagation();startpage.requestEditFav(' + i + '); return false;">edit</button>'+
+                '<button class="deleteIcon material-icons" onclick="event.stopPropagation();startpage.deleteFav(' + i + '); return false;">close</button></div></a>');
+        }
+        favoriteElement.append('<div class="addFavorite" onclick="startpage.requestAddFavorite();"><div class="material-icons">add</div></div>');
+    }
 
-};
+    requestAddFavorite() {
+        this.displayFullscreen();
+        $('#addFavorite').css('display', "block");
+    }
 
-let loginScreen = function () {
-    displayFullscreen();
-    $('#fs-login-content').css('display', "block");
+    addFavorite(){
+        event.preventDefault();
+        let name = $('#name').val().trim();
+        let domain = $('#domain').val().trim();
+        let color = $('#color').val().trim();
+        if(name !== "" && domain !== "" && color !== ""){
+            this.favorite.push({
+                'name': name,
+                'domain': domain,
+                'color': color
+            });
+            this.saveData();
+            this.loadData();
+            this.closeFullscreen();
+        }else{
+            // Display a warning
+        }
+    }
+
+    requestEditFav(id) {
+        this.idEdit = id;
+        this.displayFullscreen();
+        $('#fs-editFavorite').css('display', "block");
+        $('#editName').val(this.favorite[id].name);
+        $('#domainForm').val(this.favorite[id].domain);
+        $('#colorForm').val(this.favorite[id].color);
+    
+    }
+
+    editFavorite(){
+        let name = $('#editName').val().trim();
+        let domain = $('#domainForm').val().trim();
+        let color = $('#colorForm').val().trim();
+        if(name !== "" && domain !== "" && color !== ""){
+            this.favorite[this.idEdit] = {
+                'name': name,
+                'domain': domain,
+                'color': color
+            };
+            this.saveData();
+            this.loadData();
+            this.closeFullscreen();
+        }else{
+            // Display a warning
+        }
+    }
+
+    deleteFav(id){
+        this.favorite.splice(id, 1);
+        this.saveData();
+        this.loadData();
+    }
+
+    /**
+     * @todo
+     */
+    updateSettings(event){
+        event.preventDefault();
+    }
+
+    loadNews(){
+        $.ajax({
+            url: '/getNews',
+            type: 'GET',
+            success: (html, status) => {
+                let obj = JSON.parse(html);
+                let newsElement = document.querySelector('#news');
+                for(let i in obj){
+                    let news = document.createElement('div');
+                    news.classList.add('news-content');
+                    let titleElement = document.createElement('h2');
+                    let title = document.createTextNode(obj[i].title);
+                    titleElement.append(title);
+                    news.append(titleElement);
+                    let contentElement = document.createElement('div');
+                    let content = document.createTextNode(obj[i].content);
+                    contentElement.append(content);
+                    news.append(contentElement);
+                    newsElement.append(newsElement);
+                }
+            },
+            error: (result, status, error) => {
+                displayWarning(status, result.status);
+            }
+        })
+    }
+
+    displayFullscreen() {
+        $('body').css('overflow', "hidden");
+        const position = window.scrollY;
+        $('#fullscreen').css('display', "block");
+        $('#fullscreen').css('top', position + "px");
+    }
+    
+    closeFullscreen() {
+        $('body').css('overflow', "auto");
+        $('#fullscreen').css('display', "none");
+        $('#fs-settings-content').css('display', "none");
+        $('#addFavorite').css('display', "none");
+        $('#fs-editFavorite').css('display', "none");
+    }
 }
 
-let displayFullscreen = function () {
-    $('body').css('overflow', "hidden");
-    const position = window.scrollY;
-    $('#fullscreen').css('display', "block");
-    $('#fullscreen').css('top', position + "px");
-};
-
-let closeFullscreen = function () {
-    $('body').css('overflow', "auto");
-    $('#fullscreen').css('display', "none");
-    $('#fs-login-content').css('display', "none");
-    $('#fs-signup-content').css('display', "none");
-    $('#fs-settings-content').css('display', "none");
-    $('#addFavorite').css('display', "none");
-    $('#fs-editFavorite').css('display', "none");
-};
+let startpage = new StartPage;
 
 window.addEventListener('DOMContentLoaded', () => {
-    new Promise((resolve, reject) => {
-        $.ajax({
-            url: "/request",
-            type: "POST",
-            dataType: 'html',
-            data: 'data=credentials',
-            success: (html, status) => {
-                let object = JSON.parse(html);
-                changeLoginInfos(object);
-                resolve();
-            },
-            error: (result, status, error) => {
-                reject(status, result, error, result.responseText);
-            }
-        });
-    }).catch((status, result, error) => {
-        displayWarning(status, result.status, error);
-    }).finally(() => {
-        hideLoadingScreen();
-    });
+    startpage.loadData();
+
 });
 
-function hideLoadingScreen(){
-    $("body").css('overflow', '');
-    $("#loading").css('display', 'none');
-}
-
-document.querySelector('#loginForm').addEventListener("submit", (event) => {
+document.querySelector('#formFavorite').addEventListener("submit", (e) => {
+    e.preventDefault();
+    startpage.addFavorite();
+});
+document.querySelector('#formEditFavorite').addEventListener("submit", (event) =>{
     event.preventDefault();
-    if ($('#mail').val().trim() !== "" && $('#password').val().trim() !== "") {
-        $.ajax({
-            url: "/request",
-            type: "POST",
-            dataType: 'html',
-            data: 'data=login&mail=' + $('#mail').val().trim() + "&password=" + $('#password').val().trim(),
-            success: (html, status) => {
-                let object = JSON.parse(html);
-                changeLoginInfos(object);
-                if (!object.connected) {
-                    if ($('#fs-login-content').css('display') !== "none") {
-                        $('#fs-login-warning').css('display', "block");
-                        $('#fs-login-warning').html("Mail adress or password wrong");
-                    }
-                } else {
-                    closeFullscreen();
-                }
-            },
-            error: (result, status, error) => {
-                displayWarning(status, result.status, error, result.responseText);
-            }
-        })
-    } else {
-        $('#fs-login-warning').css('display', "block");
-        $('#fs-login-warning').html("Please insert your mail adress and your password to connect");
-    }
+    startpage.editFavorite();
 });
-
-document.querySelector('#settingsForm').addEventListener("submit", (event) => {
-    event.preventDefault();
-    let se = document.querySelector('#selectSearchEngine');
-    $.ajax({
-        url: "/request",
-        type: "POST",
-        dataType: 'html',
-        data: 'data=settings&searchengine=' + se.options[se.selectedIndex].value + '&ark_mode=' + (document.querySelector('#dark_mode').selectedIndex + 1),
-        success: (html, status) => {
-            let object = JSON.parse(html);
-            changeLoginInfos(object);
-            closeFullscreen();
-        },
-        error: (result, status, error) => {
-            displayWarning(status, result.status, error, result.responseText);
-        }
-    })
-});
-
-document.querySelector('#signup-form').addEventListener("submit", (event) => {
-    event.preventDefault();
-    let email = $('#mailSignup').val().trim();
-    let password = $('#passSignup').val().trim();
-    if (email !== "" && password !== "") {
-        $.ajax({
-            url: "/request",
-            type: "POST",
-            dataType: 'html',
-            data: 'data=signup&mail=' + email + '&password=' + password,
-            success: (html, status) => {
-                let object = JSON.parse(html);
-                if (object.connected) {
-                    changeLoginInfos(object);
-                    closeFullscreen();
-                } else {
-                    $('#fs-signup-warning').html(object.error);
-                    $('#fs-signup-warning').css('display', "block");
-                }
-            },
-            error: (result, status, error) => {
-                displayWarning(status, result.status, error, result.responseText);
-            }
-        })
-    } else {
-        $('#fs-signup-warning').html("Please insert your mail adress and your password to sign up");
-        $('#fs-signup-warning').css('display', "block");
-    }
-});
-
-document.querySelector('#formFavorite').addEventListener("submit", (event) => {
-    event.preventDefault();
-    let name = $('#name').val().trim();
-    let domain = $('#domain').val().trim();
-    let color = $('#color').val().trim();
-    if(name !== "" && domain !== "" && color !== ""){
-        $.ajax({
-            url: "/request",
-            type: "POST",
-            dataType: 'html',
-            data: 'data=addFavorite&name=' + name + '&domain=' + domain + '&color=' + color,
-            success: (html, status) => {
-                let object = JSON.parse(html);
-                changeLoginInfos(object);
-                closeFullscreen();
-            },
-            error: (result, status, error) => {
-                displayWarning(status, result.status, error, result.responseText);
-            }
-        });
-    }else{
-
-    }
-});
-
-document.querySelector('#formEditFavorite').addEventListener("submit", (event) => {
-    event.preventDefault();
-    let name = $('#editName').val().trim();
-    let domain = $('#domainForm').val().trim();
-    let color = $('#colorForm').val().trim();
-    if(name !== "" && domain !== "" && color !== ""){
-        $.ajax({
-            url: "/request",
-            type: "POST",
-            dataType: 'html',
-            data: 'data=editFavorite&id=' + idEdit + '&name=' + name + '&domain=' + domain + '&color=' + color,
-            success: (html, status) => {
-                let object = JSON.parse(html);
-                changeLoginInfos(object);
-                closeFullscreen();
-            },
-            error: (result, status, error) => {
-                displayWarning(status, result.status, error, result.responseText);
-            }
-        });
-    }else{
-
-    }
+document.querySelector('#settings').addEventListener('click', (e) => {
+    e.preventDefault();
+    startpage.displayFullscreen();
+    $('#fs-settings-content').css('display', 'block');
 });
 
 
-function changeTheme(){
-    if(dark_mode === 1 || dark_mode === 2){
-        if(dark_mode === 1){
-            // light
-            $('#dark_theme').attr('rel', 'stylesheet alternate');
-        }else{
-            // dark
-            $('#dark_theme').attr('rel', 'stylesheet');
-        }
-    }else{
-        // auto
-        let hour = new Date().getHours();
-        if(hour > 7 && hour < 19){
-            // light theme
-            $('#dark_theme').attr('rel', 'stylesheet alternate');
-        }else{
-            //dark theme
-            $('#dark_theme').attr('rel', 'stylesheet');
-        }
-    }
-}
+document.querySelector('#settingsForm').addEventListener('submit', startpage.updateSettings);
 
-function startLoop(varLoop, callback, interval){
-    varLoop = window.setInterval(callback, interval);
-}
-
-startLoop(loop, changeTheme, 1000);
 
 function displayWarning(error, statusCode, message=undefined, responseText=undefined){
     console.error(error, statusCode, message, responseText);
