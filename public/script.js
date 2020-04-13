@@ -71,8 +71,18 @@ class StartPage{
                 '<button class="deleteIcon material-icons" onclick="event.stopPropagation();startpage.deleteFav(' + i + '); return false;">close</button></div></a>');
         }
         favoriteElement.append('<div class="addFavorite" onclick="startpage.requestAddFavorite();"><div class="material-icons">add</div></div>');
+        this.load_se_in_settings();
     }
 
+    load_se_in_settings(){
+        let selectSearchEngine = $('#selectSearchEngine');
+        let content = "";
+        for(let i in startpage.searchengines){
+            content += '<option value="' + i + '">' + i + '</option>\n';
+        }
+        selectSearchEngine.html(content);
+    }
+    
     requestAddFavorite() {
         this.displayFullscreen();
         $('#addFavorite').css('display', "block");
@@ -134,10 +144,17 @@ class StartPage{
     /**
      * @todo
      */
-    updateSettings(event){
-        event.preventDefault();
+    updateSettings(){
+        let val = $('#selectSearchEngine').val();
+        if(val in Object.keys(this.searchengines));
+        this.currentSearchEngine = val;
+        this.saveData();
+        this.loadData();
     }
 
+    /**
+     * @deprecated RSS support in future - see https://stackoverflow.com/questions/10943544/how-to-parse-an-rss-feed-using-javascript
+     */
     loadNews(){
         $.ajax({
             url: '/getNews',
@@ -200,10 +217,33 @@ document.querySelector('#settings').addEventListener('click', (e) => {
     e.preventDefault();
     startpage.displayFullscreen();
     $('#fs-settings-content').css('display', 'block');
+    let selectSearchEngine = document.querySelector('#selectSearchEngine');
+    let y = 0;
+    for(let i in startpage.searchengines){
+        if(i === startpage.currentSearchEngine){
+            selectSearchEngine.children[y].setAttribute('selected', '');
+        }else{
+            selectSearchEngine.children[y].removeAttribute('selected');
+        }
+        y++;
+    }
+    let dark_mode = document.querySelector('#dark_mode');
+    for(let i in dark_mode){
+        if(i === theme.dark_mode){
+            dark_mode.setAttribute('selected', '');
+        }else{
+            dark_mode.removeAttribute('selected');
+        }
+    }
 });
 
 
-document.querySelector('#settingsForm').addEventListener('submit', startpage.updateSettings);
+document.querySelector('#settingsForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    startpage.updateSettings();
+    theme.changeTheme($('#dark_mode').val());
+    startpage.closeFullscreen();
+});
 
 
 function displayWarning(error, statusCode, message=undefined, responseText=undefined){
