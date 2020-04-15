@@ -1,9 +1,9 @@
-body{
+body {
     background-color: #36393f;
-    color:white;
+    color: white;
 }
 
-a:any-link{
+a:any-link {
     color: rgb(60, 100, 255);
 }
 
@@ -11,11 +11,11 @@ a:any-link{
     background-color: rgba(0, 0, 0, 0.65);
 }
 
-#close-button a{
-    color:white;
+#close-button a {
+    color: white;
 }
 
-#favorites > a {
-    color: black;
-    text-shadow: none;
+#favorites>a {
+    color: rgb(247, 247, 247);
+    text-shadow: 2px 2px 5px black;
 }

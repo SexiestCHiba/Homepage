@@ -24,8 +24,8 @@ class StartPage{
     };
     
     currentSearchEngine = "Google";
-    favorite = undefined;
-    idEdit = undefined;
+    favorite = [];
+    idEdit = undefined; // also used for deletion
 
     loadDefautSearchEngine(){
         let picture = $('#search-logo');
@@ -45,6 +45,7 @@ class StartPage{
     
     loadData(){
         let favoriteElement = $('#favorites');
+        let favoritePage2 = $('#favorites-page-2');
         let picture = $('#search-logo');
         let form = $('#search-form');
         let sedomain = $('#se-domain');
@@ -62,15 +63,27 @@ class StartPage{
         }else{
             this.loadDefautSearchEngine();
         }
-        this.favorite = JSON.parse(localStorage.getItem('favorite'));
-        favoriteElement.html('');
-        for(let i in this.favorite){
-            favoriteElement.append('<a href="' + this.favorite[i].domain + '"><div style="background-color:' + this.favorite[i].color + ';">'+
-                '<div>' + this.favorite[i].name + '</div>'+
-                '<button class="deleteIcon material-icons" onclick="event.stopPropagation();startpage.requestEditFav(' + i + '); return false;">edit</button>'+
-                '<button class="deleteIcon material-icons" onclick="event.stopPropagation();startpage.deleteFav(' + i + '); return false;">close</button></div></a>');
+        this.favorite = localStorage.getItem('favorite');
+        let element = favoriteElement;
+        if(!(this.favorite === null || this.favorite === "undefined")){
+            this.favorite = JSON.parse(this.favorite);
+            favoriteElement.html('');
+            favoritePage2.html('');
+            for(let i in this.favorite){
+                if(i < 8){
+                    element = favoriteElement;
+                }else{
+                    element = favoritePage2;
+                }
+                element.append('<a href="' + this.favorite[i].domain + '"><div style="background-color:' + this.favorite[i].color + ';">'+
+                    '<div>' + this.favorite[i].name + '</div>'+
+                    '<button class="deleteIcon material-icons" onclick="event.stopPropagation();startpage.requestEditFav(' + i + '); return false;">edit</button>'+
+                    '<button class="deleteIcon material-icons" onclick="event.stopPropagation();startpage.deleteFav(' + i + '); return false;">close</button></div></a>');
+            }
         }
-        favoriteElement.append('<div class="addFavorite" onclick="startpage.requestAddFavorite();"><div class="material-icons">add</div></div>');
+        if(this.favorite.length > 7)
+            element = favoritePage2;
+        element.append('<div class="addFavorite" onclick="startpage.requestAddFavorite();"><div class="material-icons">add</div></div>');
         this.load_se_in_settings();
     }
 
@@ -133,6 +146,15 @@ class StartPage{
         }else{
             // Display a warning
         }
+    }
+
+    /**
+     * @todo
+     * 
+     */
+    requestDeleteFav(id){
+        this.displayFullscreen();
+        this.idEdit = id;
     }
 
     deleteFav(id){

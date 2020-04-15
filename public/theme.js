@@ -4,7 +4,7 @@ class Theme{
 
     constructor(){
         let mode = Number(localStorage.getItem('dark_mode'));
-        if(mode !== null){
+        if(mode !== 0){ // null converted to 0
             this.dark_mode = mode;
         }else{
             this.dark_mode = 1;

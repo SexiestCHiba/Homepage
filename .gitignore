@@ -5,3 +5,4 @@ test/
 .vs
 package-lock.json
 npm-debug.log
+*.xml

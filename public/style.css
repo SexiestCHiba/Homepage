@@ -182,7 +182,8 @@ button.material-icons {
     flex: 0 1 auto;
 }
 
-#favorites {
+#favorites,
+#favorites-page-2 {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -191,13 +192,19 @@ button.material-icons {
     min-width: 500px;
 }
 
-#favorites>a {
-    color: rgb(247, 247, 247);
+#favorites-page-2 {
+    margin: 50px auto;
+}
+
+#favorites>a,
+#favorites-page-2>a {
+    color: black;
     text-decoration: none;
-    text-shadow: 2px 2px 5px black;
+    text-shadow: none;
 }
 
 #favorites a>div,
+#favorites-page-2 a>div,
 .addFavorite {
     height: 150px;
     cursor: pointer;
@@ -209,7 +216,7 @@ button.material-icons {
     text-decoration: underline;
 }
 
-#favorites .deleteIcon {
+#favorites .deleteIcon, #favorites-page-2 .deleteIcon {
     position: relative;
     top: -20px;
     left: 90%;
@@ -223,11 +230,13 @@ button.material-icons {
     transition: opacity 0.15s linear;
 }
 
-#favorites a>div:hover .deleteIcon {
+#favorites a>div:hover .deleteIcon,
+#favorites-page-2 a>div:hover .deleteIcon {
     opacity: 1;
 }
 
-#favorites div>div {
+#favorites div>div,
+#favorites-page-2 div>div {
     position: relative;
     top: 50%;
     left: 50%;
@@ -244,14 +253,15 @@ button.material-icons {
         width: 90vw;
     }
 
-    #favorites {
+    #favorites,
+    #favorites-page-2 {
         grid-template-columns: 1fr;
         width: 95vw;
         min-width: unset;
     }
 
     #favorites a>div,
-    .addFavorite {
+    #favorites-page-2 a>div .addFavorite {
         height: 100px;
         cursor: pointer;
     }
@@ -266,7 +276,8 @@ button.material-icons {
         width: 70vw;
     }
 
-    #favorites {
+    #favorites,
+    #favorites-page-2 {
         grid-template-columns: 1fr 1fr;
         width: 95vw;
         min-width: unset;
