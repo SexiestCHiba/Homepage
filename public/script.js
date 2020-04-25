@@ -4,22 +4,22 @@ class StartPage{
         "Google": {
             "search": "https://www.google.com/search",
             "domain": "https://www.google.com/",
-            "picture_url": "/public/google_logo.png"
+            "picture_url": "/public/media/google_logo.png"
         },
         "Ecosia": {
             "search": "https://www.ecosia.org/search",
             "domain": "https://www.ecosia.org/",
-            "picture_url": "/public/ecosia_logo.png"
+            "picture_url": "/public/media/ecosia_logo.png"
         },
         "Bing": {
             "search": "https://bing.com/search",
             "domain": "https://bing.com",
-            "picture_url": '/public/bing_logo.png'
+            "picture_url": '/public/media/bing_logo.png'
         },
         "Yahoo!": {
             "search": "https://yahoo.com/search",
             "domain": "https://yahoo.com/",
-            "picture_url": "/public/ecosia.png"
+            "picture_url": ""
         }
     };
     
@@ -174,36 +174,6 @@ class StartPage{
         this.loadData();
     }
 
-    /**
-     * @deprecated RSS support in future - see https://stackoverflow.com/questions/10943544/how-to-parse-an-rss-feed-using-javascript
-     */
-    loadNews(){
-        $.ajax({
-            url: '/getNews',
-            type: 'GET',
-            success: (html, status) => {
-                let obj = JSON.parse(html);
-                let newsElement = document.querySelector('#news');
-                for(let i in obj){
-                    let news = document.createElement('div');
-                    news.classList.add('news-content');
-                    let titleElement = document.createElement('h2');
-                    let title = document.createTextNode(obj[i].title);
-                    titleElement.append(title);
-                    news.append(titleElement);
-                    let contentElement = document.createElement('div');
-                    let content = document.createTextNode(obj[i].content);
-                    contentElement.append(content);
-                    news.append(contentElement);
-                    newsElement.append(newsElement);
-                }
-            },
-            error: (result, status, error) => {
-                displayWarning(status, result.status);
-            }
-        })
-    }
-
     displayFullscreen() {
         $('body').css('overflow', "hidden");
         const position = window.scrollY;
@@ -217,6 +187,36 @@ class StartPage{
         $('#fs-settings-content').css('display', "none");
         $('#addFavorite').css('display', "none");
         $('#fs-editFavorite').css('display', "none");
+    }
+
+    /**
+     * @deprecated need to be modified before be used
+     * @param {*} error 
+     * @param {*} statusCode 
+     * @param {*} message 
+     * @param {*} responseText 
+     */
+    displayWarning(error, statusCode, message=undefined, responseText=undefined){
+        console.error(error, statusCode, message, responseText);
+        if(responseText !== undefined){
+            $("#warningTitle").html("The server return an error");
+            $("#warningMessage").html(responseText);
+        }else{
+            $("#warningMessage").html(error + ' ' + statusCode);
+            if(message !== undefined)
+                $("#warningMessage").append(' ' + message);
+            if(statusCode === 0){
+                $("#warningMessage").append(" Timeout");
+                $("#warningTitle").html("Unable to contact remote server");
+            }else{
+                $("#warningTitle").html("The server return an error");
+            }
+        }
+        $('#warning').css('top', '0px');
+        window.setTimeout(() => {
+            $('#warning').css('top', '');
+            $("#warningMessage").html("");
+        }, 10000);
     }
 }
 
@@ -267,26 +267,13 @@ document.querySelector('#settingsForm').addEventListener('submit', (e) => {
     startpage.closeFullscreen();
 });
 
-
-function displayWarning(error, statusCode, message=undefined, responseText=undefined){
-    console.error(error, statusCode, message, responseText);
-    if(responseText !== undefined){
-        $("#warningTitle").html("The server return an error");
-        $("#warningMessage").html(responseText);
+function isScrolled(){
+    if(window.pageYOffset > window.innerHeight + 100){
+        document.body.classList.add('scrolled');
     }else{
-        $("#warningMessage").html(error + ' ' + statusCode);
-        if(message !== undefined)
-            $("#warningMessage").append(' ' + message);
-        if(statusCode === 0){
-            $("#warningMessage").append(" Timeout");
-            $("#warningTitle").html("Unable to contact remote server");
-        }else{
-            $("#warningTitle").html("The server return an error");
-        }
+        document.body.classList.remove('scrolled');
     }
-    $('#warning').css('top', '0px');
-    window.setTimeout(() => {
-        $('#warning').css('top', '');
-        $("#warningMessage").html("");
-    }, 10000);
 }
+document.addEventListener("scroll", isScrolled);
+window.addEventListener("resize", isScrolled);
+window.addEventListener("orientationChange", isScrolled);

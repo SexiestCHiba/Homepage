@@ -3,6 +3,10 @@ body {
     color: white;
 }
 
+.scrolled nav{
+    background-color: #36393f;
+}
+
 a:any-link {
     color: rgb(60, 100, 255);
 }
