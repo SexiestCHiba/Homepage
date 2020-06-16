@@ -1,14 +1,9 @@
 class Theme{
-    dark_mode = 1;
+    dark_mode = 0;
     loop;
 
     constructor(){
-        let mode = Number(localStorage.getItem('dark_mode'));
-        if(mode !== 0){ // null converted to 0
-            this.dark_mode = mode;
-        }else{
-            this.dark_mode = 1;
-        }
+        this.dark_mode = Number(localStorage.getItem('dark_mode'));
     }
 
     changeTheme(n){
@@ -17,10 +12,10 @@ class Theme{
     }
 
     themeLoop(){
-        if(theme.dark_mode === 1){
+        if(theme.dark_mode === 0){
             // light
             $('#dark_theme').attr('rel', 'stylesheet alternate');
-        }else if(theme.dark_mode === 2){
+        }else if(theme.dark_mode === 1){
             // dark
             $('#dark_theme').attr('rel', 'stylesheet');
         }else{

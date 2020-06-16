@@ -249,12 +249,12 @@ document.querySelector('#settings').addEventListener('click', (e) => {
         }
         y++;
     }
-    let dark_mode = document.querySelector('#dark_mode');
-    for(let i in dark_mode){
+    let dark_mode = document.querySelector('#dark_mode').children;
+    for(let i=0;i < dark_mode.length; i++){
         if(i === theme.dark_mode){
-            dark_mode.setAttribute('selected', '');
+            dark_mode[i].setAttribute('selected', '');
         }else{
-            dark_mode.removeAttribute('selected');
+            dark_mode[i].removeAttribute('selected');
         }
     }
 });
