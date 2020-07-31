@@ -148,10 +148,6 @@ class StartPage{
         }
     }
 
-    /**
-     * @todo
-     * 
-     */
     requestDeleteFav(id){
         this.displayFullscreen();
         this.idEdit = id;
@@ -163,9 +159,6 @@ class StartPage{
         this.loadData();
     }
 
-    /**
-     * @todo
-     */
     updateSettings(){
         let val = $('#selectSearchEngine').val();
         if(val in Object.keys(this.searchengines));

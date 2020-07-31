@@ -81,7 +81,8 @@ button.material-icons {
 #fs-signup-content,
 #fs-settings-content,
 #addFavorite,
-#fs-editFavorite {
+#fs-editFavorite,
+#fs-news-reorganize {
     color: black;
     background-color: white;
     position: absolute;

@@ -14,19 +14,27 @@ class Theme{
     themeLoop(){
         if(theme.dark_mode === 0){
             // light
-            $('#dark_theme').attr('rel', 'stylesheet alternate');
+            if($('#dark_theme').attr('rel') !== 'stylesheet alternate'){
+                $('#dark_theme').attr('rel', 'stylesheet alternate');
+            }
         }else if(theme.dark_mode === 1){
             // dark
-            $('#dark_theme').attr('rel', 'stylesheet');
+            if($('#dark_theme').attr('rel') !== 'stylesheet'){
+                $('#dark_theme').attr('rel', 'stylesheet');
+            }
         }else{
             // auto
             let hour = new Date().getHours();
             if(hour > 7 && hour < 19){
                 // light theme
-                $('#dark_theme').attr('rel', 'stylesheet alternate');
+                if($('#dark_theme').attr('rel') !== 'stylesheet alternate'){
+                    $('#dark_theme').attr('rel', 'stylesheet alternate');
+                }
             }else{
                 //dark theme
-                $('#dark_theme').attr('rel', 'stylesheet');
+                if($('#dark_theme').attr('rel') !== 'stylesheet'){
+                    $('#dark_theme').attr('rel', 'stylesheet');
+                }
             }
         }
     }

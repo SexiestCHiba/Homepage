@@ -2,11 +2,11 @@ class News{
 
     link = [
         {
-            'link': './public/une.xml',
+            'link': 'https://www.lemonde.fr/rss/une.xml',
             'article': []
         },
         {
-            'link': './public/rss_full.xml',
+            'link': 'https://www.lemonde.fr/pixels/rss_full.xml',
             'article': []
         }
     ]
@@ -24,9 +24,13 @@ class News{
         return new Promise((resolve, reject) => {
             let link = this.link;
             $.ajax({
-                url: this.link[index].link,
-                dataType: 'xml',
+                url: '/news',
+                type: 'POST',
+                dataType: 'html',
+                data: 'link=' + this.link[index].link,
                 success  : function (data) {
+                    let parser = new DOMParser();
+                    data = parser.parseFromString(data, "text/xml");
                     let content = data.childNodes[0].childNodes[0];
                     content.childNodes.forEach((value, i) => {
                         if(value.nodeName === "title"){
@@ -86,14 +90,19 @@ class News{
         }
     }
 
-    listNewsSource(){
+    displaySource(){
+        
+    }
 
+    listNewsSource(){
+        this.link.forEach((value, index) => {
+            $('#news-list').append('<div>' + value.link + '</div>');
+        });
     }
 }
 let news;
 window.addEventListener('DOMContentLoaded', () => {
     news = new News();
-    news.listNewsSource();
 });
 
 document.querySelector('#news-reorganize').addEventListener('click', (e) => {
