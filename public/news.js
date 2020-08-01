@@ -90,13 +90,10 @@ class News{
         }
     }
 
-    displaySource(){
-        
-    }
-
     listNewsSource(){
+        $('#news-list').html('');
         this.link.forEach((value, index) => {
-            $('#news-list').append('<div>' + value.link + '</div>');
+            $('#news-list').append('<li>' + value.link + '</li>');
         });
     }
 }
@@ -107,7 +104,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 document.querySelector('#news-reorganize').addEventListener('click', (e) => {
     startpage.displayFullscreen();
-    document.querySelector('#fs-news-reorganize').style.display = "block";
+    news.listNewsSource();
+    $('#fs-news-reorganize').css('display','block');
 });
 
 document.querySelector('#form-add-news').addEventListener('submit', (e) => {

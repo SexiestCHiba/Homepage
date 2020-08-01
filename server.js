@@ -62,12 +62,12 @@ class Startpage {
 				res.setHeader('Cache-Control', 'public');
 				res.setHeader('Keep-Alive', 'timeout=5, max=1000');
 				res.status(200).send(this.files['content']);
+				console.log('New request[' + req.connection.remoteAddress + ']: ' + req.method +  ' ' + req.url + ': 200 Success');
 			})
 			.post('/news', (req, res) => {
 				res.setHeader('Content-Type', 'application/xml; charset=utf-8');
 				res.setHeader('Cache-Control', 'public');
 				res.setHeader('Keep-Alive', 'timeout=5, max=1000');
-				console.log(req.body);
 				if(req.body.link !== undefined){
 					let module;
 					if(req.body.link.startsWith("https")){
@@ -85,7 +85,7 @@ class Startpage {
 											`Status Code: ${statusCode}`);
 						} else if (!/^application\/xml/.test(contentType)) {
 						  error = new Error('Invalid content-type.\n' +
-											`Expected application/json but received ${contentType}`);
+											`Expected application/xml but received ${contentType}`);
 						}
 
 						if(error){
@@ -99,12 +99,17 @@ class Startpage {
 						response.on('data', (chunk) => { rawData += chunk; });
 						response.on("end", () => {
 							res.status(200).send(rawData);
+							console.log('New request[' + req.connection.remoteAddress + ']: ' + req.method +  ' ' + req.url + ': 200 Sucess');
+
 						});
 					}).on("error", (err) => {
 						res.status(err.statusCode).send("News source not found");
+						console.log('New request[' + req.connection.remoteAddress + ']: ' + req.method +  ' ' + req.url + ': ' + err.statusCode + ' ' + err.status);
+
 					});
 				}else{
 					res.status(400).send('Please precise an url');
+					console.log('New request[' + req.connection.remoteAddress + ']: ' + req.method +  ' ' + req.url + ': 400 Bad request');
 				}
 			})
 			.get('/teapot', (req, res) => {
@@ -112,13 +117,16 @@ class Startpage {
 				res.setHeader('Cache-Control', 'public');
 				res.setHeader('Keep-Alive', 'timeout=5, max=1000');
 				res.status(418).send('I\'m a teapot');
-				// res.status(200).send();
+				console.log('New request[' + req.connection.remoteAddress + ']: ' + req.method +  ' ' + req.url + ': 418 I\'m a teapot');
+
 			})
 			.use((req, res) => {
 				res.setHeader('Content-Type', 'text/html; charset=utf-8');
 				res.setHeader('Cache-Control', 'public');
 				res.setHeader('Keep-Alive', 'timeout=5, max=1000');
 				res.status(404).send(this.files['404']);
+				console.log('New request[' + req.connection.remoteAddress + ']: ' + req.method +  ' ' + req.url + ': 404 Not Found');
+
 			});
 		app.listen(8080);
 	}
